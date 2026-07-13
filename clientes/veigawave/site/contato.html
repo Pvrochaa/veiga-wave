@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contato — veigawave</title>
+<meta name="description" content="Fale com a veigawave: formulário de contato, WhatsApp e e-mail.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body data-page="contato">
+
+<a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+
+<div id="site-header"></div>
+
+<main id="conteudo">
+  <section class="page-banner">
+    <h1>Contato</h1>
+    <p>Dúvida sobre pedido, troca ou tamanho? Fala com a gente.</p>
+  </section>
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a href="index.html">Home</a><span>/</span>Contato
+  </nav>
+
+  <section class="contact">
+    <h2>Manda sua mensagem</h2>
+    <p>A gente responde em até 1 dia útil, de segunda a sexta.</p>
+
+    <form class="contact-form" id="contactForm">
+      <label>Nome
+        <input type="text" name="nome" required>
+      </label>
+      <label>E-mail
+        <input type="email" name="email" required>
+      </label>
+      <label>Assunto
+        <input type="text" name="assunto" placeholder="Ex: troca, dúvida sobre tamanho, pedido de atacado...">
+      </label>
+      <label>Mensagem
+        <textarea name="mensagem" required></textarea>
+      </label>
+      <button type="submit" class="btn btn--primary">Enviar mensagem</button>
+      <p class="contact-feedback" id="contactFeedback" role="status"></p>
+    </form>
+
+    <div class="contact-info">
+      <p><strong>E-mail:</strong> <a href="mailto:contato@veigawave.com.br">contato@veigawave.com.br</a></p>
+      <p><strong>WhatsApp:</strong> clica no botão flutuante aqui embaixo, no cantinho da tela.</p>
+    </div>
+  </section>
+</main>
+
+<div id="site-footer"></div>
+
+<script src="assets/js/layout.js"></script>
+<script src="assets/js/main.js"></script>
+</body>
+</html>

@@ -107,6 +107,8 @@ button { font-family: inherit; cursor: pointer; }
 }
 .nav__list > li > a:hover::after, .nav__trigger:hover::after { width: 100%; }
 .nav__sale { color: var(--sunset-pink) !important; }
+.nav__list > li > a.is-current, .nav__trigger.is-current { color: var(--sunset-coral); }
+.nav__list > li > a.is-current::after, .nav__trigger.is-current::after { width: 100%; }
 
 .has-dropdown .dropdown {
   position: absolute; top: calc(100% + 18px); left: 50%; transform: translateX(-50%);
@@ -215,7 +217,9 @@ button { font-family: inherit; cursor: pointer; }
 .section__head h2 { font-family: var(--font-display); font-size: clamp(1.6rem, 3vw, 2.2rem); margin: 0; }
 .section__sub { color: var(--ink-soft); margin: 6px 0 0; max-width: 480px; }
 
-.carousel-nav { display: flex; gap: 8px; }
+.carousel-nav { display: flex; align-items: center; gap: 14px; }
+.link-more { font-size: 0.85rem; font-weight: 700; color: var(--sunset-coral); }
+.link-more:hover { text-decoration: underline; }
 .carousel-btn {
   width: 40px; height: 40px; border-radius: 50%; border: 1.5px solid var(--sand-tint); background: var(--white);
   font-size: 1.3rem; color: var(--ink); display: flex; align-items: center; justify-content: center;
@@ -302,6 +306,61 @@ button { font-family: inherit; cursor: pointer; }
   box-shadow: var(--shadow-md); z-index: 90; transition: transform 0.2s ease;
 }
 .whatsapp-btn:hover { transform: scale(1.08); }
+
+/* ===== Page banner (páginas internas) ===== */
+.page-banner {
+  background: var(--gradient-hero); color: var(--white); padding: 64px 24px 52px; text-align: center;
+}
+.page-banner h1 { font-family: var(--font-display); font-size: clamp(2rem, 4.5vw, 3rem); margin: 0 0 10px; }
+.page-banner p { opacity: 0.92; max-width: 520px; margin: 0 auto; }
+
+.breadcrumb {
+  max-width: 1280px; margin: 18px auto 0; padding: 0 24px; font-size: 0.8rem; color: var(--ink-soft);
+}
+.breadcrumb a { color: var(--ink-soft); }
+.breadcrumb a:hover { color: var(--sunset-coral); }
+.breadcrumb span { margin: 0 6px; }
+
+/* ===== Product grid (páginas de categoria) ===== */
+.product-grid {
+  max-width: 1280px; margin: 0 auto; padding: 40px 24px 90px;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 24px;
+}
+.grid-empty { grid-column: 1 / -1; text-align: center; color: var(--ink-soft); padding: 40px 0; }
+
+/* ===== Tabs (Biquínis por peça) ===== */
+.tabs { max-width: 1280px; margin: 0 auto; padding: 34px 24px 0; display: flex; gap: 10px; flex-wrap: wrap; }
+.tabs button {
+  padding: 10px 22px; border-radius: 999px; border: 1.5px solid var(--sand-tint); background: var(--white);
+  font-weight: 700; font-size: 0.85rem; color: var(--ink-soft); transition: all 0.2s ease;
+}
+.tabs button:hover { border-color: var(--sunset-coral); color: var(--ink); }
+.tabs button.is-active { background: var(--gradient-warm); color: var(--white); border-color: transparent; }
+
+/* ===== Sobre a marca ===== */
+.about { max-width: 720px; margin: 0 auto; padding: 70px 24px 100px; }
+.about h2 { font-family: var(--font-display); font-size: clamp(1.7rem, 4vw, 2.4rem); margin: 0 0 18px; }
+.about p { font-size: 1.05rem; line-height: 1.75; color: var(--ink-soft); margin: 0 0 22px; }
+.about__values { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 18px; margin-top: 36px; }
+.about__value { background: var(--sand-tint); border-radius: var(--radius-md); padding: 22px; }
+.about__value h3 { font-size: 1rem; margin: 0 0 8px; }
+.about__value p { font-size: 0.9rem; margin: 0; color: var(--ink-soft); }
+.about__cta { margin-top: 40px; }
+
+/* ===== Contato ===== */
+.contact { max-width: 620px; margin: 0 auto; padding: 70px 24px 100px; }
+.contact h2 { font-family: var(--font-display); font-size: clamp(1.7rem, 4vw, 2.2rem); margin: 0 0 10px; }
+.contact > p { color: var(--ink-soft); margin: 0 0 32px; }
+.contact-form { display: flex; flex-direction: column; gap: 16px; }
+.contact-form label { font-size: 0.85rem; font-weight: 700; display: flex; flex-direction: column; gap: 6px; }
+.contact-form input, .contact-form textarea {
+  padding: 14px 16px; border-radius: var(--radius-sm); border: 1.5px solid var(--sand-tint);
+  font-family: inherit; font-size: 0.95rem;
+}
+.contact-form textarea { min-height: 140px; resize: vertical; }
+.contact-form button { align-self: flex-start; }
+.contact-feedback { font-weight: 600; color: var(--ocean-blue); min-height: 20px; }
+.contact-info { margin-top: 40px; display: flex; flex-direction: column; gap: 8px; font-size: 0.9rem; color: var(--ink-soft); }
 
 /* ===== Responsive ===== */
 @media (min-width: 960px) {

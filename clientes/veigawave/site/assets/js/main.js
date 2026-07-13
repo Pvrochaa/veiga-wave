@@ -102,13 +102,43 @@ const PRODUCTS = {
     { name: "@bebiaz", desc: "usando Conjunto Deep Blue", gradient: "linear-gradient(135deg,#1b6ca8,#0b3d5c)" },
     { name: "@nat.oliveira", desc: "usando Top Horizonte", gradient: "linear-gradient(135deg,#ff6b9d,#2ec4b6)" },
   ],
+  biquinis: [
+    { name: "Top Golden Hour", desc: "Cortininha • Dourado degradê", price: "R$ 149", piece: "tops", gradient: "linear-gradient(135deg,#ffc15e,#ff8a5b)" },
+    { name: "Top Recorte Ondas", desc: "Cortininha • Turquesa", price: "R$ 139", piece: "tops", gradient: "linear-gradient(135deg,#2ec4b6,#1b6ca8)" },
+    { name: "Top Horizonte", desc: "Triângulo • Turquesa", price: "R$ 149", piece: "tops", gradient: "linear-gradient(135deg,#2ec4b6,#1b6ca8)" },
+    { name: "Calcinha Maré Alta", desc: "Asa-delta • Coral", price: "R$ 119", piece: "calcinhas", gradient: "linear-gradient(135deg,#ff8a5b,#ff6b9d)" },
+    { name: "Calcinha Sunset", desc: "Fio • Coral degradê", price: "R$ 109", piece: "calcinhas", gradient: "linear-gradient(135deg,#ff8a5b,#ffc15e)" },
+    { name: "Calcinha Hot Pant Areia", desc: "Hot pant • Areia", price: "R$ 115", piece: "calcinhas", gradient: "linear-gradient(135deg,#e7ddc9,#c9a45c)" },
+    { name: "Conjunto Entardecer", desc: "Hot pant • Rosé", price: "R$ 259", piece: "conjuntos", gradient: "linear-gradient(135deg,#ff6b9d,#ffc15e)" },
+    { name: "Conjunto Deep Blue", desc: "Lateral larga • Azul profundo", price: "R$ 249", old: "R$ 289", piece: "conjuntos", gradient: "linear-gradient(135deg,#1b6ca8,#0b3d5c)" },
+    { name: "Conjunto Ilha", desc: "Asa-delta • Verde mar", price: "R$ 259", old: "R$ 299", piece: "conjuntos", gradient: "linear-gradient(135deg,#2ec4b6,#0b3d5c)" },
+  ],
+  maiobody: [
+    { name: "Maiô Costas Nadador", desc: "Recorte lateral • Rosé", price: "R$ 219", gradient: "linear-gradient(135deg,#ff6b9d,#ff8a5b)" },
+    { name: "Maiô Decote Profundo", desc: "Decote V • Preto solar", price: "R$ 229", gradient: "linear-gradient(135deg,#07211f,#0a8478)" },
+    { name: "Body Recorte Cintura", desc: "Cava alta • Turquesa", price: "R$ 239", tag: "Novo", gradient: "linear-gradient(135deg,#14c6b2,#0a8478)" },
+    { name: "Maiô Amarração Lateral", desc: "Sustentação • Coral", price: "R$ 219", gradient: "linear-gradient(135deg,#ff6a45,#ffc46b)" },
+    { name: "Body Manga Longa", desc: "Proteção UV • Areia", price: "R$ 259", tag: "Novo", gradient: "linear-gradient(135deg,#e7ddc9,#0a8478)" },
+  ],
+  saidas: [
+    { name: "Saída Maré Baixa", desc: "Kimono leve • Areia", price: "R$ 189", tag: "Novo", gradient: "linear-gradient(135deg,#ffc15e,#2ec4b6)" },
+    { name: "Canga Horizonte", desc: "Estampa degradê • 100% viscose", price: "R$ 99", gradient: "linear-gradient(135deg,#ff6a45,#14c6b2)" },
+    { name: "Chapéu Palha Solar", desc: "Aba larga • Natural", price: "R$ 89", gradient: "linear-gradient(135deg,#e7ddc9,#c9a45c)" },
+    { name: "Bolsa de Praia Tecida", desc: "Palha + couro sintético", price: "R$ 159", gradient: "linear-gradient(135deg,#0a8478,#07211f)" },
+    { name: "Vestido Transpassado", desc: "Saída longa • Coral", price: "R$ 179", tag: "Novo", gradient: "linear-gradient(135deg,#ff6b9d,#ff6a45)" },
+  ],
+  sale: [
+    { name: "Conjunto Maré Cheia", desc: "Asa-delta • Turquesa", price: "R$ 159", old: "R$ 259", tag: "-38%", gradient: "linear-gradient(135deg,#14c6b2,#0a8478)" },
+    { name: "Top Areia Dourada", desc: "Cortininha • Areia", price: "R$ 89", old: "R$ 139", tag: "-36%", gradient: "linear-gradient(135deg,#e7ddc9,#ffc46b)" },
+    { name: "Calcinha Fio Coral", desc: "Fio • Coral", price: "R$ 69", old: "R$ 109", tag: "-37%", gradient: "linear-gradient(135deg,#ff8a5b,#ff6b9d)" },
+    { name: "Maiô Clássico Profundo", desc: "Decote reto • Profundo", price: "R$ 149", old: "R$ 229", tag: "-35%", gradient: "linear-gradient(135deg,#07211f,#0a8478)" },
+    { name: "Saída Kimono Pôr do Sol", desc: "Viscose leve • Degradê", price: "R$ 119", old: "R$ 189", tag: "-37%", gradient: "linear-gradient(135deg,#ff6a45,#ffc46b)" },
+    { name: "Conjunto Última Onda", desc: "Hot pant • Rosé", price: "R$ 169", old: "R$ 259", tag: "-35%", gradient: "linear-gradient(135deg,#ff6b9d,#ffc15e)" },
+  ],
 };
 
-function renderCarousel(id, key) {
-  const container = document.getElementById(id);
-  if (!container) return;
-  const items = PRODUCTS[key] || [];
-  container.innerHTML = items.map((item, i) => `
+function productCardHTML(item) {
+  return `
     <article class="product-card">
       <div class="product-card__img" style="background:${item.gradient}">
         ${item.tag ? `<span class="product-card__tag">${item.tag}</span>` : ""}
@@ -124,12 +154,43 @@ function renderCarousel(id, key) {
         </div>` : ""}
       </div>
     </article>
-  `).join("");
+  `;
+}
+
+function renderCarousel(id, key) {
+  const container = document.getElementById(id);
+  if (!container) return;
+  const items = PRODUCTS[key] || [];
+  container.innerHTML = items.map(productCardHTML).join("");
+}
+
+function renderGrid(id, items) {
+  const container = document.getElementById(id);
+  if (!container) return;
+  container.innerHTML = items.length
+    ? items.map(productCardHTML).join("")
+    : `<p class="grid-empty">Nada por aqui ainda — volta em breve.</p>`;
 }
 
 renderCarousel("carousel-lancamentos", "lancamentos");
 renderCarousel("carousel-maisvendidos", "maisvendidos");
 renderCarousel("carousel-ugc", "ugc");
+renderGrid("grid-novidades", PRODUCTS.lancamentos);
+renderGrid("grid-maiobody", PRODUCTS.maiobody);
+renderGrid("grid-saidas", PRODUCTS.saidas);
+renderGrid("grid-sale", PRODUCTS.sale);
+
+const biquinisGrid = document.getElementById("grid-biquinis");
+if (biquinisGrid) {
+  const tabs = document.querySelectorAll(".tabs [data-tab]");
+  function applyTab(tab) {
+    const items = tab === "todos" ? PRODUCTS.biquinis : PRODUCTS.biquinis.filter((p) => p.piece === tab);
+    renderGrid("grid-biquinis", items);
+    tabs.forEach((btn) => btn.classList.toggle("is-active", btn.dataset.tab === tab));
+  }
+  tabs.forEach((btn) => btn.addEventListener("click", () => applyTab(btn.dataset.tab)));
+  applyTab(location.hash ? location.hash.slice(1) : "todos");
+}
 
 document.querySelectorAll(".carousel-btn").forEach((btn) => {
   btn.addEventListener("click", () => {
@@ -231,8 +292,20 @@ searchInput.addEventListener("input", () => {
 
 const newsletterForm = document.getElementById("newsletterForm");
 const newsletterFeedback = document.getElementById("newsletterFeedback");
-newsletterForm.addEventListener("submit", (e) => {
-  e.preventDefault();
-  newsletterFeedback.textContent = "Prontinho! Cupom VEIGA10 chegando no seu e-mail 🌅";
-  newsletterForm.reset();
-});
+if (newsletterForm) {
+  newsletterForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    newsletterFeedback.textContent = "Prontinho! Cupom VEIGA10 chegando no seu e-mail 🌅";
+    newsletterForm.reset();
+  });
+}
+
+const contactForm = document.getElementById("contactForm");
+const contactFeedback = document.getElementById("contactFeedback");
+if (contactForm) {
+  contactForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    contactFeedback.textContent = "Recebemos sua mensagem! A gente responde em até 1 dia útil 🌊";
+    contactForm.reset();
+  });
+}
