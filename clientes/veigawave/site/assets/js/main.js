@@ -27,36 +27,47 @@
     ctx.fillStyle = sky;
     ctx.fillRect(0, 0, w, h);
 
-    const sx = w * 0.5, sy = h * 0.5 + Math.sin(t * 0.0006) * 6, r = Math.min(w, h) * 0.14;
-    const glow = ctx.createRadialGradient(sx, sy, 0, sx, sy, r * 4);
-    glow.addColorStop(0, "rgba(255,220,150,.9)");
-    glow.addColorStop(0.25, "rgba(255,170,90,.45)");
-    glow.addColorStop(1, "rgba(255,140,80,0)");
-    ctx.fillStyle = glow;
-    ctx.beginPath(); ctx.arc(sx, sy, r * 4, 0, Math.PI * 2); ctx.fill();
-
-    const sun = ctx.createLinearGradient(0, sy - r, 0, sy + r);
-    sun.addColorStop(0, "#FFDDA0");
-    sun.addColorStop(1, "#FF7A45");
-    ctx.fillStyle = sun;
-    ctx.beginPath(); ctx.arc(sx, sy, r, 0, Math.PI * 2); ctx.fill();
-
     const bands = [
-      { y: 0.64, a: 10, l: 0.011, s: 0.00025, col: "rgba(20,198,178,.35)" },
-      { y: 0.76, a: 15, l: 0.009, s: 0.00018, col: "rgba(10,132,120,.45)" },
-      { y: 0.9, a: 22, l: 0.007, s: 0.00013, col: "rgba(6,37,36,.7)" },
+      { y: 0.6, a: 9, l: 0.013, s: 0.0009, top: "rgba(255,196,107,.22)", bottom: "rgba(20,198,178,.42)" },
+      { y: 0.7, a: 13, l: 0.010, s: 0.0007, top: "rgba(20,198,178,.4)", bottom: "rgba(10,132,120,.55)" },
+      { y: 0.81, a: 17, l: 0.008, s: 0.0005, top: "rgba(10,132,120,.55)", bottom: "rgba(7,33,31,.78)" },
+      { y: 0.93, a: 24, l: 0.006, s: 0.00035, top: "rgba(7,33,31,.85)", bottom: "#062524" },
     ];
+
     bands.forEach((b) => {
+      const points = [];
       ctx.beginPath();
       ctx.moveTo(0, h);
       for (let x = 0; x <= w; x += 6) {
-        const y = h * b.y + Math.sin(x * b.l + t * b.s) * b.a + Math.sin(x * b.l * 0.5 + t * b.s * 0.7) * b.a * 0.4;
+        const y = h * b.y + Math.sin(x * b.l + t * b.s) * b.a + Math.sin(x * b.l * 0.45 + t * b.s * 0.65) * b.a * 0.4;
+        points.push([x, y]);
         ctx.lineTo(x, y);
       }
-      ctx.lineTo(w, h); ctx.closePath();
-      ctx.fillStyle = b.col;
+      ctx.lineTo(w, h);
+      ctx.closePath();
+      const fill = ctx.createLinearGradient(0, h * b.y - b.a, 0, h);
+      fill.addColorStop(0, b.top);
+      fill.addColorStop(1, b.bottom);
+      ctx.fillStyle = fill;
       ctx.fill();
+
+      ctx.beginPath();
+      points.forEach(([x, y], i) => (i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y)));
+      ctx.strokeStyle = "rgba(255,255,255,.16)";
+      ctx.lineWidth = 1.4;
+      ctx.stroke();
     });
+
+    for (let i = 0; i < 16; i++) {
+      const seed = i * 137.5;
+      const x = (seed + t * 0.012) % w;
+      const y = h * 0.6 + Math.sin(x * 0.013 + t * 0.0009) * 9 - 5;
+      const twinkle = (Math.sin(t * 0.0022 + i * 1.7) + 1) / 2;
+      ctx.beginPath();
+      ctx.arc(x, y, 1.3, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255,224,170,${(0.12 + twinkle * 0.38).toFixed(2)})`;
+      ctx.fill();
+    }
   }
 
   if (reduceMotion) { draw(0); return; }
