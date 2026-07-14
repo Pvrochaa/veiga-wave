@@ -497,7 +497,8 @@ button { font-family: inherit; cursor: pointer; }
   background: var(--gradient-deep); color: var(--white); font-weight: 700; font-size: 0.78rem;
   text-transform: uppercase; letter-spacing: 0.04em;
 }
-.size-table tbody tr:nth-child(even) { background: var(--sand-tint); }
+.size-table tbody tr { background: var(--white); }
+.size-table tbody tr:not(:last-child) td { border-bottom: 1px solid var(--sand-tint); }
 .size-table tbody td:first-child { font-weight: 800; color: var(--ink); }
 .policy--tint .size-table { box-shadow: none; }
 
