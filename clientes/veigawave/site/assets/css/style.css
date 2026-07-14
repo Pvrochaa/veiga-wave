@@ -482,6 +482,25 @@ button { font-family: inherit; cursor: pointer; }
   background: #fff3d6; color: #8a5a00; padding: 1px 6px; border-radius: 4px; font-weight: 600; font-size: 0.92em;
 }
 
+/* Cards de medida/tipo de corpo reaproveitam .about__value dentro de .policy —
+   restaura o espaçamento compacto original (a regra .policy h3/p, mais específica
+   por vir depois no arquivo, do contrário estoura o card). */
+.policy .about__value h3 { margin: 0 0 8px; font-size: 1rem; }
+.policy .about__value p { margin: 0; font-size: 0.9rem; line-height: 1.6; }
+.policy .about__values { margin-top: 8px; }
+
+/* ===== Guia de medidas ===== */
+.size-table-wrap { overflow-x: auto; margin-bottom: 24px; }
+.size-table { width: 100%; border-collapse: collapse; background: var(--white); border-radius: var(--radius-md); overflow: hidden; box-shadow: var(--shadow-sm); }
+.size-table th, .size-table td { padding: 14px 18px; text-align: left; font-size: 0.92rem; }
+.size-table thead th {
+  background: var(--gradient-deep); color: var(--white); font-weight: 700; font-size: 0.78rem;
+  text-transform: uppercase; letter-spacing: 0.04em;
+}
+.size-table tbody tr:nth-child(even) { background: var(--sand-tint); }
+.size-table tbody td:first-child { font-weight: 800; color: var(--ink); }
+.policy--tint .size-table { box-shadow: none; }
+
 /* ===== Responsive ===== */
 @media (min-width: 1200px) {
   .nav { display: block; }

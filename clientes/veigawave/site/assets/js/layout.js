@@ -120,6 +120,7 @@ const SITE_HEADER = `
     <li><a href="sobre.html">Sobre a marca</a></li>
     <li><a href="contato.html">Contato</a></li>
     <li><a href="rastreio.html">Rastrear pedido</a></li>
+    <li><a href="guia-de-medidas.html">Guia de medidas</a></li>
   </ul>
 </div>
 `;
@@ -135,7 +136,7 @@ const SITE_FOOTER = `
       <h4>Ajuda</h4>
       <a href="rastreio.html">Rastrear pedido</a>
       <a href="politicas.html#trocas">Trocas e devoluções</a>
-      <a href="#">Guia de medidas</a>
+      <a href="guia-de-medidas.html">Guia de medidas</a>
       <a href="contato.html">Fale com a gente</a>
     </div>
     <div>
