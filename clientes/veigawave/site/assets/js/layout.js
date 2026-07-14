@@ -1,6 +1,6 @@
 const SITE_HEADER = `
 <div class="topbar">
-  <p>Frete grátis acima de R$ 299 · 5% OFF no Pix · Parcelamento em até 6x sem juros</p>
+  <p>Frete grátis acima de R$ 299 · Até 6x sem juros · Troca fácil em 30 dias · 5% OFF no Pix</p>
 </div>
 
 <header class="header" id="header">
