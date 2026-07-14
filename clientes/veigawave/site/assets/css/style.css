@@ -488,6 +488,10 @@ button { font-family: inherit; cursor: pointer; }
 .policy .about__value h3 { margin: 0 0 8px; font-size: 1rem; }
 .policy .about__value p { margin: 0; font-size: 0.9rem; line-height: 1.6; }
 .policy .about__values { margin-top: 8px; }
+.about__value--cta {
+  background: none; box-shadow: none; padding: 0;
+  display: flex; align-items: center; justify-content: center;
+}
 
 /* ===== Guia de medidas ===== */
 .size-table-wrap { overflow-x: auto; margin-bottom: 24px; }
