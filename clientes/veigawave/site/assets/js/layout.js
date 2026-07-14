@@ -132,21 +132,21 @@ const SITE_FOOTER = `
     <div>
       <h4>Ajuda</h4>
       <a href="#">Rastrear pedido</a>
-      <a href="#">Trocas e devoluções</a>
+      <a href="politicas.html#trocas">Trocas e devoluções</a>
       <a href="#">Guia de medidas</a>
       <a href="contato.html">Fale com a gente</a>
     </div>
     <div>
       <h4>Institucional</h4>
       <a href="sobre.html">Sobre a marca</a>
-      <a href="#">Política de privacidade</a>
-      <a href="#">Termos de uso</a>
+      <a href="politicas.html#privacidade">Política de privacidade</a>
+      <a href="politicas.html#termos">Termos de uso</a>
       <a href="#">Atacado / Revenda</a>
     </div>
     <div>
       <h4>Fale com a gente</h4>
       <a href="mailto:contato@veigawave.com.br">contato@veigawave.com.br</a>
-      <a href="contato.html">WhatsApp</a>
+      <a href="https://wa.me/5521968368098" target="_blank" rel="noopener">WhatsApp</a>
       <a href="#">Instagram</a>
     </div>
   </div>
@@ -155,9 +155,9 @@ const SITE_FOOTER = `
   </div>
 </footer>
 
-<button class="whatsapp-btn" aria-label="Falar no WhatsApp">
+<a class="whatsapp-btn" href="https://wa.me/5521968368098" target="_blank" rel="noopener" aria-label="Falar no WhatsApp">
   <svg viewBox="0 0 32 32" width="26" height="26" fill="currentColor"><path d="M16.02 3C9.4 3 4 8.4 4 15.02c0 2.35.66 4.55 1.8 6.43L4 29l7.73-1.75a12.98 12.98 0 0 0 4.29.73c6.62 0 12.02-5.4 12.02-12.02C28.04 8.4 22.64 3 16.02 3zm0 21.85c-1.5 0-2.95-.4-4.22-1.15l-.3-.18-4.58 1.04 1.06-4.47-.2-.32a9.8 9.8 0 0 1-1.5-5.25c0-5.43 4.4-9.83 9.74-9.83 5.4 0 9.74 4.4 9.74 9.83 0 5.43-4.4 9.83-9.74 9.83zm5.36-7.36c-.29-.15-1.73-.85-2-.95-.27-.1-.47-.15-.66.15-.2.29-.76.95-.93 1.15-.17.2-.34.22-.63.07-.29-.14-1.22-.45-2.32-1.43-.86-.76-1.44-1.7-1.6-1.99-.17-.29-.02-.45.13-.6.13-.13.29-.34.44-.51.14-.17.19-.29.29-.49.1-.2.05-.37-.02-.51-.07-.15-.66-1.6-.9-2.19-.24-.57-.48-.5-.66-.5h-.56c-.2 0-.51.07-.78.37-.27.29-1.02 1-1.02 2.44s1.05 2.83 1.2 3.02c.15.2 2.06 3.16 5 4.42.7.3 1.24.48 1.67.62.7.22 1.34.19 1.84.12.56-.08 1.73-.71 1.98-1.4.24-.68.24-1.27.17-1.4-.07-.12-.27-.19-.56-.34z"/></svg>
-</button>
+</a>
 `;
 
 function mountLayout() {
