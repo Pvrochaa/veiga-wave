@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>veigawave</title>
+<meta name="description" content="Seu carrinho na veigawave.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body data-page="carrinho">
+
+<a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+
+<div id="site-header"></div>
+
+<main id="conteudo">
+  <section class="page-banner">
+    <h1>Seu carrinho</h1>
+    <p>Confere os itens antes de fechar o pedido.</p>
+  </section>
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a href="index.html">Home</a><span>/</span>Carrinho
+  </nav>
+
+  <div id="cartEmpty" class="favoritos-empty is-hidden">
+    <p>Seu carrinho está vazio.</p>
+    <a href="colecoes.html" class="btn btn--primary">Ver coleção</a>
+  </div>
+
+  <div id="cartWrap" class="cart-wrap is-hidden">
+    <ul id="cartList" class="cart-list"></ul>
+
+    <div class="cart-summary">
+      <div class="cart-summary__row">
+        <span>Subtotal</span>
+        <strong id="cartSubtotal">R$ 0</strong>
+      </div>
+      <button type="button" class="btn btn--primary" disabled>Finalizar compra</button>
+      <p class="cart-summary__note">Checkout chega na próxima etapa — por enquanto, dá pra montar e ajustar o carrinho.</p>
+    </div>
+  </div>
+</main>
+
+<div id="site-footer"></div>
+
+<script src="assets/js/layout.js"></script>
+<script src="assets/js/main.js"></script>
+</body>
+</html>

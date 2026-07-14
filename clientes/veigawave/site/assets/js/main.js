@@ -158,6 +158,17 @@ function escapeAttr(str) {
   return String(str).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
+const CART_ID_KEY = "veigawave_cart_id";
+
+function getCartId() {
+  let id = localStorage.getItem(CART_ID_KEY);
+  if (!id) {
+    id = crypto.randomUUID();
+    localStorage.setItem(CART_ID_KEY, id);
+  }
+  return id;
+}
+
 function productCardHTML(item) {
   const slug = slugify(item.name);
   return `
@@ -180,7 +191,15 @@ function productCardHTML(item) {
         ${item.price ? `
         <div class="product-card__footer">
           <span>${item.old ? `<span class="product-card__old">${item.old}</span>` : ""}<span class="product-card__price">${item.price}</span></span>
-          <button class="product-card__add" data-add aria-label="Adicionar ${item.name} ao carrinho">+</button>
+          <button
+            class="product-card__add" data-add
+            data-slug="${slug}"
+            data-name="${escapeAttr(item.name)}"
+            data-desc="${escapeAttr(item.desc || "")}"
+            data-price="${escapeAttr(item.price || "")}"
+            data-gradient="${escapeAttr(item.gradient || "")}"
+            aria-label="Adicionar ${item.name} ao carrinho"
+          >+</button>
         </div>` : ""}
       </div>
     </article>
@@ -336,17 +355,59 @@ function completePendingFavorite() {
   toggleFavorite(btn);
 }
 
+function setCartCount(n) {
+  cartCount = Math.max(0, n);
+  cartBadge.textContent = cartCount;
+}
+
+async function syncCartBadge() {
+  try {
+    const res = await fetch(`/api/carrinho?cartId=${encodeURIComponent(getCartId())}`);
+    if (!res.ok) return;
+    const data = await res.json();
+    const total = (data.items || []).reduce((sum, item) => sum + item.quantity, 0);
+    setCartCount(total);
+  } catch {
+    // sem conexão — mantém o que já estava mostrando
+  }
+}
+
+async function addToCart(btn) {
+  const product = {
+    slug: btn.dataset.slug,
+    name: btn.dataset.name,
+    desc: btn.dataset.desc,
+    price: btn.dataset.price,
+    gradient: btn.dataset.gradient,
+  };
+
+  setCartCount(cartCount + 1);
+  bump(cartBadge);
+
+  try {
+    const res = await fetch("/api/carrinho", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ cartId: getCartId(), product }),
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (typeof data.totalItems === "number") setCartCount(data.totalItems);
+    }
+  } catch {
+    // mantém a contagem otimista mesmo se a chamada falhar
+  }
+}
+
 document.addEventListener("click", (e) => {
   const fav = e.target.closest("[data-fav]");
   if (fav) toggleFavorite(fav);
 
   const add = e.target.closest("[data-add]");
-  if (add) {
-    cartCount += 1;
-    cartBadge.textContent = cartCount;
-    bump(cartBadge);
-  }
+  if (add) addToCart(add);
 });
+
+syncCartBadge();
 
 const menuToggle = document.getElementById("menuToggle");
 const mobileNav = document.getElementById("mobileNav");
@@ -683,4 +744,96 @@ if (favoritosGrid) {
   }
 
   renderFavoritos();
+}
+
+const cartListEl = document.getElementById("cartList");
+const cartEmptyEl = document.getElementById("cartEmpty");
+const cartWrapEl = document.getElementById("cartWrap");
+const cartSubtotalEl = document.getElementById("cartSubtotal");
+
+function parsePriceToCents(priceStr) {
+  if (!priceStr) return 0;
+  const digits = String(priceStr).replace(/[^\d,]/g, "").replace(",", ".");
+  const value = parseFloat(digits);
+  return Number.isFinite(value) ? Math.round(value * 100) : 0;
+}
+
+function cartItemHTML(item) {
+  const lineCents = parsePriceToCents(item.price) * item.quantity;
+  return `
+    <li class="cart-item" data-slug="${item.slug}">
+      <div class="cart-item__img" style="background:${item.gradient || "var(--sand-tint)"}"></div>
+      <div class="cart-item__body">
+        <p class="cart-item__name">${item.name}</p>
+        <p class="cart-item__desc">${item.desc || ""}</p>
+      </div>
+      <div class="cart-item__qty">
+        <button type="button" data-qty-dec aria-label="Diminuir quantidade de ${item.name}">−</button>
+        <span>${item.quantity}</span>
+        <button type="button" data-qty-inc aria-label="Aumentar quantidade de ${item.name}">+</button>
+      </div>
+      <p class="cart-item__price">${formatCents(lineCents)}</p>
+      <button type="button" class="cart-item__remove" data-remove aria-label="Remover ${item.name}">✕</button>
+    </li>
+  `;
+}
+
+if (cartListEl) {
+  async function loadCart() {
+    try {
+      const res = await fetch(`/api/carrinho?cartId=${encodeURIComponent(getCartId())}`);
+      const data = await res.json();
+      const items = data.items || [];
+
+      if (items.length === 0) {
+        cartEmptyEl.classList.remove("is-hidden");
+        cartWrapEl.classList.add("is-hidden");
+        return;
+      }
+
+      cartEmptyEl.classList.add("is-hidden");
+      cartWrapEl.classList.remove("is-hidden");
+      cartListEl.innerHTML = items.map(cartItemHTML).join("");
+
+      const subtotalCents = items.reduce((sum, item) => sum + parsePriceToCents(item.price) * item.quantity, 0);
+      cartSubtotalEl.textContent = formatCents(subtotalCents);
+    } catch {
+      cartEmptyEl.classList.add("is-hidden");
+      cartWrapEl.classList.remove("is-hidden");
+      cartListEl.innerHTML = `<p class="grid-empty">Não deu pra carregar o carrinho agora. Tenta de novo em instantes.</p>`;
+    }
+  }
+
+  async function updateCartQuantity(slug, quantity) {
+    await fetch("/api/carrinho", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ cartId: getCartId(), slug, quantity }),
+    });
+    await loadCart();
+    await syncCartBadge();
+  }
+
+  async function removeFromCart(slug) {
+    await fetch("/api/carrinho", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ cartId: getCartId(), slug }),
+    });
+    await loadCart();
+    await syncCartBadge();
+  }
+
+  cartListEl.addEventListener("click", (e) => {
+    const li = e.target.closest(".cart-item");
+    if (!li) return;
+    const slug = li.dataset.slug;
+    const currentQty = Number(li.querySelector(".cart-item__qty span").textContent);
+
+    if (e.target.closest("[data-qty-inc]")) updateCartQuantity(slug, currentQty + 1);
+    else if (e.target.closest("[data-qty-dec]")) updateCartQuantity(slug, currentQty - 1);
+    else if (e.target.closest("[data-remove]")) removeFromCart(slug);
+  });
+
+  loadCart();
 }
