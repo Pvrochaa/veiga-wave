@@ -14,32 +14,28 @@ const SITE_HEADER = `
     <nav class="nav" id="nav" aria-label="Navegação principal">
       <ul class="nav__list">
         <li><a href="novidades.html" data-nav="novidades">Novidades</a></li>
-        <li><a href="colecoes.html" data-nav="colecoes">Coleções</a></li>
         <li class="has-dropdown">
-          <button class="nav__trigger" aria-expanded="false" data-nav="biquinis">Biquínis</button>
+          <button class="nav__trigger" aria-expanded="false" data-nav="colecoes">Coleções</button>
           <div class="dropdown">
             <div class="dropdown__col">
-              <h4>Por peça</h4>
+              <h4>Categorias</h4>
+              <a href="biquinis.html">Biquínis</a>
+              <a href="maio-body.html">Maiôs/Body</a>
+              <a href="saidas-de-praia.html">Saídas de praia</a>
+            </div>
+            <div class="dropdown__col">
+              <h4>Biquínis por peça</h4>
               <a href="biquinis.html#tops">Tops</a>
               <a href="biquinis.html#calcinhas">Calcinhas</a>
               <a href="biquinis.html#conjuntos">Conjuntos</a>
             </div>
-            <div class="dropdown__col">
-              <h4>Por corte</h4>
-              <a href="biquinis.html">Cortininha</a>
-              <a href="biquinis.html">Asa-delta</a>
-              <a href="biquinis.html">Hot pant</a>
-              <a href="biquinis.html">Lateral larga</a>
-            </div>
             <div class="dropdown__col dropdown__col--highlight">
               <h4>Cápsula da vez</h4>
               <p>Golden Hour — tons de pôr do sol pra maré alta.</p>
-              <a href="colecoes.html" class="dropdown__cta">Ver coleção →</a>
+              <a href="colecoes.html" class="dropdown__cta">Ver todas →</a>
             </div>
           </div>
         </li>
-        <li><a href="maio-body.html" data-nav="maiobody">Maiôs/Body</a></li>
-        <li><a href="saidas-de-praia.html" data-nav="saidas">Saídas de praia</a></li>
         <li><a href="sale.html" class="nav__sale" data-nav="sale">Sale/Outlet</a></li>
         <li><a href="sobre.html" data-nav="sobre">Sobre a marca</a></li>
         <li><a href="contato.html" data-nav="contato">Contato</a></li>
@@ -50,7 +46,7 @@ const SITE_HEADER = `
       <button class="icon-btn" id="searchToggle" aria-label="Buscar" aria-expanded="false">
         <svg viewBox="0 0 24 24" width="20" height="20"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><line x1="21" y1="21" x2="16.65" y2="16.65" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
       </button>
-      <button class="icon-btn" aria-label="Minha conta">
+      <button class="icon-btn" id="accountToggle" aria-label="Minha conta" aria-expanded="false">
         <svg viewBox="0 0 24 24" width="20" height="20"><circle cx="12" cy="8" r="4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
       </button>
       <button class="icon-btn" id="wishlistBtn" aria-label="Favoritos">
@@ -72,9 +68,47 @@ const SITE_HEADER = `
     </div>
     <ul class="search-suggestions" id="searchSuggestions"></ul>
   </div>
+
+  <div class="account-panel" id="accountPanel">
+    <div class="account-panel__inner">
+      <button class="icon-btn account-panel__close" id="accountClose" aria-label="Fechar">✕</button>
+
+      <div class="account-panel__guest" id="accountGuest">
+        <div class="account-tabs">
+          <button type="button" class="account-tab is-active" data-account-tab="entrar">Entrar</button>
+          <button type="button" class="account-tab" data-account-tab="criar">Criar conta</button>
+        </div>
+
+        <form class="account-form" id="loginForm">
+          <label>E-mail<input type="email" name="email" required></label>
+          <label>Senha<input type="password" name="senha" required minlength="6"></label>
+          <button type="submit" class="btn btn--primary">Entrar</button>
+          <p class="account-feedback" id="loginFeedback" role="status"></p>
+        </form>
+
+        <form class="account-form is-hidden" id="signupForm">
+          <label>Nome<input type="text" name="nome" required></label>
+          <label>E-mail<input type="email" name="email" required></label>
+          <label>Telefone<input type="tel" name="telefone" placeholder="(11) 91234-5678" required></label>
+          <label>Senha<input type="password" name="senha" required minlength="6"></label>
+          <button type="submit" class="btn btn--primary">Criar conta</button>
+          <p class="account-feedback" id="signupFeedback" role="status"></p>
+        </form>
+      </div>
+
+      <div class="account-panel__user is-hidden" id="accountUser">
+        <div class="account-avatar" id="accountAvatar"></div>
+        <p class="account-name" id="accountName"></p>
+        <p class="account-email" id="accountEmail"></p>
+        <button type="button" class="btn btn--ghost-dark" id="logoutBtn">Sair da conta</button>
+      </div>
+    </div>
+  </div>
 </header>
 
+<div class="mobile-nav-backdrop" id="mobileNavBackdrop"></div>
 <div class="mobile-nav" id="mobileNav">
+  <button class="mobile-nav__close" id="mobileNavClose" aria-label="Fechar menu">✕</button>
   <ul>
     <li><a href="novidades.html">Novidades</a></li>
     <li><a href="colecoes.html">Coleções</a></li>
@@ -134,7 +168,9 @@ function mountLayout() {
 
   const current = document.body.dataset.page;
   if (current) {
-    document.querySelectorAll(`[data-nav="${current}"]`).forEach((el) => el.classList.add("is-current"));
+    const collectionPages = ["colecoes", "biquinis", "maiobody", "saidas"];
+    const navKey = collectionPages.includes(current) ? "colecoes" : current;
+    document.querySelectorAll(`[data-nav="${navKey}"]`).forEach((el) => el.classList.add("is-current"));
   }
 }
 

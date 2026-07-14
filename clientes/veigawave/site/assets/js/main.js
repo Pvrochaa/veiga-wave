@@ -230,16 +230,29 @@ document.addEventListener("click", (e) => {
 
 const menuToggle = document.getElementById("menuToggle");
 const mobileNav = document.getElementById("mobileNav");
-menuToggle.addEventListener("click", () => {
-  const isOpen = mobileNav.classList.toggle("is-open");
-  menuToggle.classList.toggle("is-active", isOpen);
-  menuToggle.setAttribute("aria-expanded", String(isOpen));
-});
-mobileNav.querySelectorAll("a").forEach((a) => a.addEventListener("click", () => {
+const mobileNavClose = document.getElementById("mobileNavClose");
+const mobileNavBackdrop = document.getElementById("mobileNavBackdrop");
+
+function openMobileNav() {
+  mobileNav.classList.add("is-open");
+  mobileNavBackdrop.classList.add("is-open");
+  menuToggle.classList.add("is-active");
+  menuToggle.setAttribute("aria-expanded", "true");
+}
+function closeMobileNav() {
   mobileNav.classList.remove("is-open");
+  mobileNavBackdrop.classList.remove("is-open");
   menuToggle.classList.remove("is-active");
   menuToggle.setAttribute("aria-expanded", "false");
-}));
+}
+
+menuToggle.addEventListener("click", () => {
+  mobileNav.classList.contains("is-open") ? closeMobileNav() : openMobileNav();
+});
+mobileNavClose.addEventListener("click", closeMobileNav);
+mobileNavBackdrop.addEventListener("click", closeMobileNav);
+document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeMobileNav(); });
+mobileNav.querySelectorAll("a").forEach((a) => a.addEventListener("click", closeMobileNav));
 
 document.querySelectorAll(".has-dropdown").forEach((item) => {
   const trigger = item.querySelector(".nav__trigger");
@@ -289,6 +302,93 @@ searchInput.addEventListener("input", () => {
     ? matches.slice(0, 6).map((p) => `<li><a href="#">${p.name} — <span style="opacity:.6">${p.desc}</span></a></li>`).join("")
     : `<li class="empty">Nada por aqui ainda. Bora tentar outra palavra?</li>`;
 });
+
+const ACCOUNT_KEY = "veigawave_account";
+
+function getAccount() {
+  try { return JSON.parse(localStorage.getItem(ACCOUNT_KEY)); } catch { return null; }
+}
+
+(function initAccountPanel() {
+  const toggle = document.getElementById("accountToggle");
+  const panel = document.getElementById("accountPanel");
+  if (!toggle || !panel) return;
+
+  const closeBtn = document.getElementById("accountClose");
+  const guestView = document.getElementById("accountGuest");
+  const userView = document.getElementById("accountUser");
+  const tabs = panel.querySelectorAll("[data-account-tab]");
+  const loginForm = document.getElementById("loginForm");
+  const signupForm = document.getElementById("signupForm");
+  const accountAvatar = document.getElementById("accountAvatar");
+  const accountName = document.getElementById("accountName");
+  const accountEmail = document.getElementById("accountEmail");
+  const logoutBtn = document.getElementById("logoutBtn");
+
+  function renderState() {
+    const acc = getAccount();
+    const loggedIn = !!acc;
+    guestView.classList.toggle("is-hidden", loggedIn);
+    userView.classList.toggle("is-hidden", !loggedIn);
+    toggle.classList.toggle("is-authed", loggedIn);
+    if (loggedIn) {
+      accountName.textContent = acc.nome;
+      accountEmail.textContent = acc.email;
+      accountAvatar.textContent = acc.nome.trim().charAt(0).toUpperCase() || "?";
+    }
+  }
+
+  function openPanel() {
+    renderState();
+    panel.classList.add("is-open");
+    toggle.setAttribute("aria-expanded", "true");
+  }
+  function closePanel() {
+    panel.classList.remove("is-open");
+    toggle.setAttribute("aria-expanded", "false");
+  }
+
+  toggle.addEventListener("click", openPanel);
+  closeBtn.addEventListener("click", closePanel);
+  panel.addEventListener("click", (e) => { if (e.target === panel) closePanel(); });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") closePanel(); });
+
+  tabs.forEach((tab) => tab.addEventListener("click", () => {
+    tabs.forEach((t) => t.classList.toggle("is-active", t === tab));
+    const view = tab.dataset.accountTab;
+    loginForm.classList.toggle("is-hidden", view !== "entrar");
+    signupForm.classList.toggle("is-hidden", view !== "criar");
+  }));
+
+  loginForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const email = loginForm.email.value.trim();
+    const stored = getAccount();
+    const nome = stored && stored.email === email ? stored.nome : email.split("@")[0];
+    localStorage.setItem(ACCOUNT_KEY, JSON.stringify({ nome, email }));
+    loginForm.reset();
+    renderState();
+    setTimeout(closePanel, 400);
+  });
+
+  signupForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const nome = signupForm.nome.value.trim();
+    const email = signupForm.email.value.trim();
+    const telefone = signupForm.telefone.value.trim();
+    localStorage.setItem(ACCOUNT_KEY, JSON.stringify({ nome, email, telefone }));
+    signupForm.reset();
+    renderState();
+    setTimeout(closePanel, 400);
+  });
+
+  logoutBtn.addEventListener("click", () => {
+    localStorage.removeItem(ACCOUNT_KEY);
+    renderState();
+  });
+
+  renderState();
+})();
 
 const newsletterForm = document.getElementById("newsletterForm");
 const newsletterFeedback = document.getElementById("newsletterFeedback");
