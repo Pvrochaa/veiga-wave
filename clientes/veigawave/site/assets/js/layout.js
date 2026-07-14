@@ -39,6 +39,7 @@ const SITE_HEADER = `
         <li><a href="sale.html" class="nav__sale" data-nav="sale">Sale/Outlet</a></li>
         <li><a href="sobre.html" data-nav="sobre">Sobre a marca</a></li>
         <li><a href="contato.html" data-nav="contato">Contato</a></li>
+        <li><a href="rastreio.html" data-nav="rastreio">Rastrear pedido</a></li>
       </ul>
     </nav>
 
@@ -118,6 +119,7 @@ const SITE_HEADER = `
     <li><a href="sale.html">Sale/Outlet</a></li>
     <li><a href="sobre.html">Sobre a marca</a></li>
     <li><a href="contato.html">Contato</a></li>
+    <li><a href="rastreio.html">Rastrear pedido</a></li>
   </ul>
 </div>
 `;
@@ -131,7 +133,7 @@ const SITE_FOOTER = `
     </div>
     <div>
       <h4>Ajuda</h4>
-      <a href="#">Rastrear pedido</a>
+      <a href="rastreio.html">Rastrear pedido</a>
       <a href="politicas.html#trocas">Trocas e devoluções</a>
       <a href="#">Guia de medidas</a>
       <a href="contato.html">Fale com a gente</a>

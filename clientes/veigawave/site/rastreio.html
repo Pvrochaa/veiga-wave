@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>veigawave</title>
+<meta name="description" content="Rastreie seu pedido veigawave com o número do pedido e o e-mail usado na compra.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body data-page="rastreio">
+
+<a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+
+<div id="site-header"></div>
+
+<main id="conteudo">
+  <section class="page-banner">
+    <h1>Rastrear pedido</h1>
+    <p>Digite o número do pedido e o e-mail usado na compra pra ver o status.</p>
+  </section>
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a href="index.html">Home</a><span>/</span>Rastrear pedido
+  </nav>
+
+  <section class="contact">
+    <h2>Onde tá meu pedido?</h2>
+    <p>Essas informações estão no e-mail de confirmação que você recebeu.</p>
+
+    <form class="contact-form tracking-form" id="trackingForm">
+      <label>Número do pedido
+        <input type="text" name="pedido" placeholder="Ex: VW1003" required>
+      </label>
+      <label>E-mail usado na compra
+        <input type="email" name="email" required>
+      </label>
+      <button type="submit" class="btn btn--primary">Rastrear</button>
+      <p class="contact-feedback" id="trackingFeedback" role="status"></p>
+    </form>
+
+    <div id="trackingResult" class="tracking-result is-hidden"></div>
+  </section>
+</main>
+
+<div id="site-footer"></div>
+
+<script src="assets/js/layout.js"></script>
+<script src="assets/js/main.js"></script>
+</body>
+</html>

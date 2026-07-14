@@ -405,6 +405,58 @@ button { font-family: inherit; cursor: pointer; }
 .contact-feedback { font-weight: 600; color: var(--ocean-blue); min-height: 20px; }
 .contact-info { margin-top: 40px; display: flex; flex-direction: column; gap: 8px; font-size: 0.9rem; color: var(--ink-soft); }
 
+/* ===== Rastrear pedido ===== */
+.tracking-result { margin-top: 40px; }
+.tracking-result.is-hidden { display: none; }
+
+.tracking-error {
+  background: #fff3d6; color: #8a5a00; border-radius: var(--radius-sm); padding: 14px 18px;
+  font-size: 0.9rem; font-weight: 600;
+}
+
+.tracking-summary {
+  background: var(--white); border-radius: var(--radius-md); box-shadow: var(--shadow-sm);
+  padding: 24px; margin-bottom: 28px;
+}
+.tracking-summary__number { font-family: var(--font-display); font-size: 1.3rem; margin: 0 0 4px; }
+.tracking-summary__meta { color: var(--ink-soft); font-size: 0.88rem; margin: 0; }
+.tracking-summary__items { margin: 14px 0 0; padding: 0; list-style: none; font-size: 0.88rem; color: var(--ink-soft); }
+.tracking-summary__items li { padding: 3px 0; }
+.tracking-summary__tracking {
+  margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--sand-tint);
+  font-size: 0.9rem; color: var(--ink-soft);
+}
+.tracking-summary__tracking strong { color: var(--ink); }
+.tracking-summary__tracking a { color: var(--ocean-blue); text-decoration: underline; text-underline-offset: 2px; }
+
+.tracking-steps { display: flex; justify-content: space-between; gap: 4px; }
+.tracking-step {
+  flex: 1; display: flex; flex-direction: column; align-items: center; text-align: center;
+  position: relative;
+}
+.tracking-step::before {
+  content: ""; position: absolute; top: 14px; left: -50%; width: 100%; height: 2px;
+  background: var(--sand-tint); z-index: 0;
+}
+.tracking-step:first-child::before { display: none; }
+.tracking-step__dot {
+  width: 30px; height: 30px; border-radius: 50%; background: var(--sand-tint); color: var(--ink-soft);
+  display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.85rem;
+  border: 2px solid var(--sand-tint); position: relative; z-index: 1; transition: all 0.25s ease;
+}
+.tracking-step__label { margin-top: 10px; font-size: 0.78rem; font-weight: 700; color: var(--ink-soft); }
+.tracking-step__date { font-size: 0.7rem; color: var(--ink-soft); margin-top: 2px; }
+.tracking-step.is-reached .tracking-step__dot { background: var(--gradient-warm); border-color: transparent; color: var(--white); }
+.tracking-step.is-reached::before { background: var(--gradient-warm); }
+.tracking-step.is-current .tracking-step__dot { box-shadow: 0 0 0 4px rgba(255,106,69,0.25); }
+.tracking-step.is-current .tracking-step__label { color: var(--ink); }
+
+@media (max-width: 520px) {
+  .tracking-step__label { font-size: 0.66rem; }
+  .tracking-step__date { display: none; }
+  .tracking-step__dot { width: 26px; height: 26px; font-size: 0.75rem; }
+}
+
 /* ===== Políticas ===== */
 .policy-nav {
   display: flex; gap: 10px; flex-wrap: wrap; max-width: 1280px; margin: 26px auto 0; padding: 0 24px;

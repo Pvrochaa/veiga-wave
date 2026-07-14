@@ -409,3 +409,105 @@ if (contactForm) {
     contactForm.reset();
   });
 }
+
+const TRACKING_STATUS_ORDER = ["confirmado", "separacao", "enviado", "entregue"];
+const TRACKING_STATUS_LABELS = {
+  confirmado: "Confirmado",
+  separacao: "Em separação",
+  enviado: "Enviado",
+  entregue: "Entregue",
+};
+
+function formatTrackingDate(iso) {
+  return new Date(iso).toLocaleDateString("pt-BR", { day: "2-digit", month: "short" });
+}
+
+function formatCents(cents) {
+  return (cents / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+}
+
+function trackingStepsHTML(order) {
+  const eventDate = {};
+  order.timeline.forEach((e) => { eventDate[e.status] = e.occurredAt; });
+  const currentIndex = TRACKING_STATUS_ORDER.indexOf(order.status);
+
+  const steps = TRACKING_STATUS_ORDER.map((status, i) => {
+    const reached = i <= currentIndex;
+    const current = i === currentIndex;
+    const classes = ["tracking-step"];
+    if (reached) classes.push("is-reached");
+    if (current) classes.push("is-current");
+    return `
+      <div class="${classes.join(" ")}">
+        <span class="tracking-step__dot">${reached ? "✓" : i + 1}</span>
+        <span class="tracking-step__label">${TRACKING_STATUS_LABELS[status]}</span>
+        ${eventDate[status] ? `<span class="tracking-step__date">${formatTrackingDate(eventDate[status])}</span>` : ""}
+      </div>
+    `;
+  }).join("");
+
+  return `<div class="tracking-steps">${steps}</div>`;
+}
+
+function trackingSummaryHTML(order) {
+  const items = Array.isArray(order.items) ? order.items : [];
+  const itemsHTML = items
+    .map((item) => `<li>${item.qty}× ${item.name}${item.price_cents ? ` — ${formatCents(item.price_cents)}` : ""}</li>`)
+    .join("");
+
+  const trackingHTML = order.trackingCode
+    ? `<div class="tracking-summary__tracking">
+        <strong>${order.carrier || "Transportadora"}</strong> — código ${order.trackingCode}
+        ${order.trackingUrl ? `<br><a href="${order.trackingUrl}" target="_blank" rel="noopener">Rastrear na transportadora →</a>` : ""}
+      </div>`
+    : "";
+
+  return `
+    <div class="tracking-summary">
+      <p class="tracking-summary__number">Pedido ${order.orderNumber}</p>
+      <p class="tracking-summary__meta">Status atual: <strong>${order.statusLabel}</strong></p>
+      ${itemsHTML ? `<ul class="tracking-summary__items">${itemsHTML}</ul>` : ""}
+      ${trackingHTML}
+    </div>
+  `;
+}
+
+const trackingForm = document.getElementById("trackingForm");
+const trackingFeedback = document.getElementById("trackingFeedback");
+const trackingResult = document.getElementById("trackingResult");
+
+if (trackingForm) {
+  trackingForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    trackingFeedback.textContent = "Buscando seu pedido...";
+    trackingResult.classList.add("is-hidden");
+    trackingResult.innerHTML = "";
+
+    const orderNumber = trackingForm.pedido.value.trim();
+    const email = trackingForm.email.value.trim();
+
+    try {
+      const response = await fetch("/api/rastrear-pedido", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderNumber, email }),
+      });
+      const data = await response.json();
+
+      if (!response.ok) {
+        trackingFeedback.textContent = "";
+        trackingResult.innerHTML = `<p class="tracking-error">${data.error || "Não foi possível encontrar esse pedido."}</p>`;
+        trackingResult.classList.remove("is-hidden");
+        return;
+      }
+
+      trackingFeedback.textContent = "";
+      trackingResult.innerHTML = trackingSummaryHTML(data) + trackingStepsHTML(data);
+      trackingResult.classList.remove("is-hidden");
+    } catch {
+      trackingFeedback.textContent = "";
+      trackingResult.innerHTML = `<p class="tracking-error">Erro ao buscar o pedido. Tenta de novo em instantes.</p>`;
+      trackingResult.classList.remove("is-hidden");
+    }
+  });
+}
