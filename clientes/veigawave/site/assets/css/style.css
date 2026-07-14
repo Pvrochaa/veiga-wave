@@ -494,6 +494,13 @@ button { font-family: inherit; cursor: pointer; }
 }
 
 /* ===== Guia de medidas ===== */
+/* .policy h2/p tem margin-left/right:0 (mais específico que .policy--tint > *),
+   o que descentraliza título/texto em relação à tabela nas seções com tint. */
+.policy.policy--tint > h2,
+.policy.policy--tint > p {
+  margin-left: auto;
+  margin-right: auto;
+}
 .size-table-wrap { overflow-x: auto; margin-bottom: 24px; }
 .size-table { width: 100%; border-collapse: collapse; background: var(--white); border-radius: var(--radius-md); overflow: hidden; box-shadow: var(--shadow-sm); }
 .size-table th, .size-table td { padding: 14px 18px; text-align: left; font-size: 0.92rem; }
