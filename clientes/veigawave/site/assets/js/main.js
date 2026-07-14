@@ -137,12 +137,42 @@ const PRODUCTS = {
   ],
 };
 
+const ACCENT_MAP = {
+  a: "áàãâä", e: "éèêë", i: "íìîï", o: "óòõôö", u: "úùûü", c: "ç", n: "ñ",
+};
+const ACCENT_LOOKUP = Object.entries(ACCENT_MAP).reduce((map, [plain, accented]) => {
+  for (const ch of accented) map[ch] = plain;
+  return map;
+}, {});
+
+function slugify(str) {
+  return String(str)
+    .toLowerCase()
+    .replace(/[^\x00-\x7f]/g, (ch) => ACCENT_LOOKUP[ch] || ch)
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+function escapeAttr(str) {
+  return String(str).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
 function productCardHTML(item) {
+  const slug = slugify(item.name);
   return `
     <article class="product-card">
       <div class="product-card__img" style="background:${item.gradient}">
         ${item.tag ? `<span class="product-card__tag">${item.tag}</span>` : ""}
-        <button class="product-card__fav" data-fav aria-label="Favoritar ${item.name}">♡</button>
+        <button
+          class="product-card__fav" data-fav
+          data-slug="${slug}"
+          data-name="${escapeAttr(item.name)}"
+          data-desc="${escapeAttr(item.desc || "")}"
+          data-price="${escapeAttr(item.price || "")}"
+          data-gradient="${escapeAttr(item.gradient || "")}"
+          aria-label="Favoritar ${item.name}"
+        >♡</button>
       </div>
       <div class="product-card__body">
         <p class="product-card__name">${item.name}</p>
@@ -211,15 +241,105 @@ function bump(badge) {
   setTimeout(() => badge.classList.remove("pop"), 200);
 }
 
+// Atribuído dentro do initAccountPanel() mais abaixo — os cliques só
+// acontecem depois que o script inteiro já rodou, então isso já está
+// preenchido quando alguém realmente clica.
+let openAccountPanel = null;
+let pendingFavorite = null;
+
+function setWishlistCount(n) {
+  wishlistCount = Math.max(0, n);
+  wishlistBadge.textContent = wishlistCount;
+}
+
+function favoriteProductFromButton(btn) {
+  return {
+    slug: btn.dataset.slug,
+    name: btn.dataset.name,
+    desc: btn.dataset.desc,
+    price: btn.dataset.price,
+    gradient: btn.dataset.gradient,
+  };
+}
+
+async function fetchFavoriteSlugs(email) {
+  try {
+    const res = await fetch(`/api/favoritos?email=${encodeURIComponent(email)}`);
+    if (!res.ok) return [];
+    const data = await res.json();
+    return (data.favorites || []).map((f) => f.slug);
+  } catch {
+    return [];
+  }
+}
+
+async function syncFavoriteButtons() {
+  const account = getAccount();
+  if (!account) {
+    setWishlistCount(0);
+    return;
+  }
+  const slugs = await fetchFavoriteSlugs(account.email);
+  setWishlistCount(slugs.length);
+  document.querySelectorAll("[data-fav]").forEach((btn) => {
+    const isFav = slugs.includes(btn.dataset.slug);
+    btn.classList.toggle("is-active", isFav);
+    btn.textContent = isFav ? "♥" : "♡";
+  });
+}
+
+async function toggleFavorite(btn) {
+  const account = getAccount();
+  if (!account) {
+    pendingFavorite = btn;
+    if (openAccountPanel) openAccountPanel();
+    return;
+  }
+
+  const willFavorite = !btn.classList.contains("is-active");
+  btn.classList.toggle("is-active", willFavorite);
+  btn.textContent = willFavorite ? "♥" : "♡";
+  setWishlistCount(wishlistCount + (willFavorite ? 1 : -1));
+  bump(wishlistBadge);
+
+  const product = favoriteProductFromButton(btn);
+
+  try {
+    if (willFavorite) {
+      await fetch("/api/favoritos", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: account.email, product }),
+      });
+    } else {
+      await fetch("/api/favoritos", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: account.email, slug: product.slug }),
+      });
+      if (document.body.dataset.page === "favoritos") {
+        btn.closest(".product-card")?.remove();
+      }
+    }
+  } catch {
+    // reverte se a chamada falhar
+    btn.classList.toggle("is-active", !willFavorite);
+    btn.textContent = !willFavorite ? "♥" : "♡";
+    setWishlistCount(wishlistCount + (willFavorite ? -1 : 1));
+  }
+}
+
+function completePendingFavorite() {
+  if (!pendingFavorite) return;
+  const btn = pendingFavorite;
+  pendingFavorite = null;
+  toggleFavorite(btn);
+}
+
 document.addEventListener("click", (e) => {
   const fav = e.target.closest("[data-fav]");
-  if (fav) {
-    const active = fav.classList.toggle("is-active");
-    fav.textContent = active ? "♥" : "♡";
-    wishlistCount += active ? 1 : -1;
-    wishlistBadge.textContent = wishlistCount;
-    bump(wishlistBadge);
-  }
+  if (fav) toggleFavorite(fav);
+
   const add = e.target.closest("[data-add]");
   if (add) {
     cartCount += 1;
@@ -348,6 +468,8 @@ function getAccount() {
     toggle.setAttribute("aria-expanded", "false");
   }
 
+  openAccountPanel = openPanel;
+
   toggle.addEventListener("click", openPanel);
   closeBtn.addEventListener("click", closePanel);
   panel.addEventListener("click", (e) => { if (e.target === panel) closePanel(); });
@@ -360,7 +482,7 @@ function getAccount() {
     signupForm.classList.toggle("is-hidden", view !== "criar");
   }));
 
-  loginForm.addEventListener("submit", (e) => {
+  loginForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     const email = loginForm.email.value.trim();
     const stored = getAccount();
@@ -368,10 +490,12 @@ function getAccount() {
     localStorage.setItem(ACCOUNT_KEY, JSON.stringify({ nome, email }));
     loginForm.reset();
     renderState();
+    await syncFavoriteButtons();
+    completePendingFavorite();
     setTimeout(closePanel, 400);
   });
 
-  signupForm.addEventListener("submit", (e) => {
+  signupForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     const nome = signupForm.nome.value.trim();
     const email = signupForm.email.value.trim();
@@ -379,16 +503,25 @@ function getAccount() {
     localStorage.setItem(ACCOUNT_KEY, JSON.stringify({ nome, email, telefone }));
     signupForm.reset();
     renderState();
+    await syncFavoriteButtons();
+    completePendingFavorite();
     setTimeout(closePanel, 400);
   });
 
   logoutBtn.addEventListener("click", () => {
     localStorage.removeItem(ACCOUNT_KEY);
     renderState();
+    document.querySelectorAll("[data-fav].is-active").forEach((btn) => {
+      btn.classList.remove("is-active");
+      btn.textContent = "♡";
+    });
+    setWishlistCount(0);
   });
 
   renderState();
 })();
+
+syncFavoriteButtons();
 
 const newsletterForm = document.getElementById("newsletterForm");
 const newsletterFeedback = document.getElementById("newsletterFeedback");
@@ -510,4 +643,44 @@ if (trackingForm) {
       trackingResult.classList.remove("is-hidden");
     }
   });
+}
+
+const favoritosGrid = document.getElementById("grid-favoritos");
+const favoritosLoggedOut = document.getElementById("favoritosLoggedOut");
+const favoritosLoginBtn = document.getElementById("favoritosLoginBtn");
+
+if (favoritosGrid) {
+  if (favoritosLoginBtn) {
+    favoritosLoginBtn.addEventListener("click", () => {
+      if (openAccountPanel) openAccountPanel();
+    });
+  }
+
+  async function renderFavoritos() {
+    const account = getAccount();
+    if (!account) {
+      favoritosLoggedOut.classList.remove("is-hidden");
+      favoritosGrid.classList.add("is-hidden");
+      return;
+    }
+    favoritosLoggedOut.classList.add("is-hidden");
+    favoritosGrid.classList.remove("is-hidden");
+
+    try {
+      const res = await fetch(`/api/favoritos?email=${encodeURIComponent(account.email)}`);
+      const data = await res.json();
+      const favorites = data.favorites || [];
+      favoritosGrid.innerHTML = favorites.length
+        ? favorites.map(productCardHTML).join("")
+        : `<p class="grid-empty">Você ainda não favoritou nada. <a href="colecoes.html">Dá uma olhada na coleção</a>.</p>`;
+      favoritosGrid.querySelectorAll("[data-fav]").forEach((btn) => {
+        btn.classList.add("is-active");
+        btn.textContent = "♥";
+      });
+    } catch {
+      favoritosGrid.innerHTML = `<p class="grid-empty">Não deu pra carregar seus favoritos agora. Tenta de novo em instantes.</p>`;
+    }
+  }
+
+  renderFavoritos();
 }

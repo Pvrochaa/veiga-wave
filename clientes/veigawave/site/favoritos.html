@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>veigawave</title>
+<meta name="description" content="Seus favoritos na veigawave — tudo que você curtiu, num lugar só.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body data-page="favoritos">
+
+<a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+
+<div id="site-header"></div>
+
+<main id="conteudo">
+  <section class="page-banner">
+    <h1>Seus favoritos</h1>
+    <p>Tudo que você curtiu pela veigawave, num lugar só.</p>
+  </section>
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a href="index.html">Home</a><span>/</span>Favoritos
+  </nav>
+
+  <div id="favoritosLoggedOut" class="favoritos-empty is-hidden">
+    <p>Entra na sua conta pra ver e guardar seus favoritos.</p>
+    <button type="button" id="favoritosLoginBtn" class="btn btn--primary">Entrar / criar conta</button>
+  </div>
+
+  <div id="grid-favoritos" class="product-grid is-hidden"></div>
+</main>
+
+<div id="site-footer"></div>
+
+<script src="assets/js/layout.js"></script>
+<script src="assets/js/main.js"></script>
+</body>
+</html>

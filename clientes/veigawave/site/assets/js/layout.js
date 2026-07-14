@@ -50,10 +50,10 @@ const SITE_HEADER = `
       <button class="icon-btn" id="accountToggle" aria-label="Minha conta" aria-expanded="false">
         <svg viewBox="0 0 24 24" width="20" height="20"><circle cx="12" cy="8" r="4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
       </button>
-      <button class="icon-btn" id="wishlistBtn" aria-label="Favoritos">
+      <a class="icon-btn" id="wishlistBtn" href="favoritos.html" aria-label="Favoritos">
         <svg viewBox="0 0 24 24" width="20" height="20"><path d="M12 20s-7-4.4-9.5-8.7C.6 8 2 4.5 5.6 4c2-.3 3.7.7 4.4 2.3C10.7 4.7 12.4 3.7 14.4 4 18 4.5 19.4 8 17.5 11.3 15 15.6 12 20 12 20z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
         <span class="badge" id="wishlistCount">0</span>
-      </button>
+      </a>
       <button class="icon-btn" id="cartBtn" aria-label="Carrinho">
         <svg viewBox="0 0 24 24" width="20" height="20"><path d="M3 4h2l2.4 12.4a2 2 0 0 0 2 1.6h7.6a2 2 0 0 0 2-1.6L21 8H6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="10" cy="21" r="1.4" fill="currentColor"/><circle cx="18" cy="21" r="1.4" fill="currentColor"/></svg>
         <span class="badge" id="cartCount">0</span>

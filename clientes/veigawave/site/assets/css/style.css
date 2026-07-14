@@ -513,6 +513,12 @@ button { font-family: inherit; cursor: pointer; }
 .size-table tbody td:first-child { font-weight: 800; color: var(--ink); }
 .policy--tint .size-table { box-shadow: none; }
 
+/* ===== Favoritos ===== */
+.favoritos-empty { max-width: 480px; margin: 0 auto; padding: 70px 24px 100px; text-align: center; }
+.favoritos-empty p { color: var(--ink-soft); margin: 0 0 24px; }
+.favoritos-empty.is-hidden { display: none; }
+#grid-favoritos.is-hidden { display: none; }
+
 /* ===== Responsive ===== */
 @media (min-width: 1200px) {
   .nav { display: block; }
