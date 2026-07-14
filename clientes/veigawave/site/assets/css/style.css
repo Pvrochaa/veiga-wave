@@ -300,11 +300,16 @@ button { font-family: inherit; cursor: pointer; }
 .product-card__footer { display: flex; align-items: center; justify-content: space-between; }
 .product-card__price { font-weight: 800; font-size: 1rem; }
 .product-card__old { font-size: 0.78rem; color: var(--ink-soft); text-decoration: line-through; font-weight: 500; margin-right: 6px; }
-.product-card__add {
-  background: var(--ink); color: var(--white); border: none; width: 34px; height: 34px; border-radius: 50%;
-  font-size: 1.1rem; font-weight: 700; transition: background 0.2s ease;
+.product-card__actions { display: flex; align-items: center; gap: 8px; }
+.product-card__add, .product-card__buy {
+  border: none; width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; transition: transform 0.15s ease, background 0.2s ease;
 }
+.product-card__add { background: var(--ink); color: var(--white); }
 .product-card__add:hover { background: var(--sunset-coral); }
+.product-card__buy { background: var(--gradient-warm); color: var(--white); }
+.product-card__buy:hover { transform: scale(1.08); }
+.product-card__add:active, .product-card__buy:active { transform: scale(0.92); }
 
 .carousel--ugc .product-card__img { aspect-ratio: 1/1; }
 

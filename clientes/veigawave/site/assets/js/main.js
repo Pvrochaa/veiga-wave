@@ -191,15 +191,28 @@ function productCardHTML(item) {
         ${item.price ? `
         <div class="product-card__footer">
           <span>${item.old ? `<span class="product-card__old">${item.old}</span>` : ""}<span class="product-card__price">${item.price}</span></span>
-          <button
-            class="product-card__add" data-add
-            data-slug="${slug}"
-            data-name="${escapeAttr(item.name)}"
-            data-desc="${escapeAttr(item.desc || "")}"
-            data-price="${escapeAttr(item.price || "")}"
-            data-gradient="${escapeAttr(item.gradient || "")}"
-            aria-label="Adicionar ${item.name} ao carrinho"
-          >+</button>
+          <div class="product-card__actions">
+            <button
+              class="product-card__buy" data-buy
+              data-slug="${slug}"
+              data-name="${escapeAttr(item.name)}"
+              data-desc="${escapeAttr(item.desc || "")}"
+              data-price="${escapeAttr(item.price || "")}"
+              data-gradient="${escapeAttr(item.gradient || "")}"
+              aria-label="Comprar ${item.name} agora"
+              title="Comprar agora"
+            ><svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z"/></svg></button>
+            <button
+              class="product-card__add" data-add
+              data-slug="${slug}"
+              data-name="${escapeAttr(item.name)}"
+              data-desc="${escapeAttr(item.desc || "")}"
+              data-price="${escapeAttr(item.price || "")}"
+              data-gradient="${escapeAttr(item.gradient || "")}"
+              aria-label="Adicionar ${item.name} ao carrinho"
+              title="Adicionar ao carrinho"
+            ><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h2l2.4 12.4a2 2 0 0 0 2 1.6h7.6a2 2 0 0 0 2-1.6L21 8H6"/><circle cx="10" cy="21" r="1.4" fill="currentColor" stroke="none"/><circle cx="18" cy="21" r="1.4" fill="currentColor" stroke="none"/></svg></button>
+          </div>
         </div>` : ""}
       </div>
     </article>
@@ -399,12 +412,20 @@ async function addToCart(btn) {
   }
 }
 
+async function buyNow(btn) {
+  await addToCart(btn);
+  location.href = "carrinho.html";
+}
+
 document.addEventListener("click", (e) => {
   const fav = e.target.closest("[data-fav]");
   if (fav) toggleFavorite(fav);
 
   const add = e.target.closest("[data-add]");
   if (add) addToCart(add);
+
+  const buy = e.target.closest("[data-buy]");
+  if (buy) buyNow(buy);
 });
 
 syncCartBadge();
