@@ -145,6 +145,7 @@ const SITE_FOOTER = `
       <a href="politicas.html#privacidade">Política de privacidade</a>
       <a href="politicas.html#termos">Termos de uso</a>
       <a href="#">Atacado / Revenda</a>
+      <a href="admin.html">Área do lojista</a>
     </div>
     <div>
       <h4>Fale com a gente</h4>

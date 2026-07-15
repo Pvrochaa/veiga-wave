@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>veigawave</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="Área do lojista veigawave — cadastro de produtos.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body data-page="admin">
+
+<a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+
+<div id="site-header"></div>
+
+<main id="conteudo">
+  <section class="page-banner">
+    <h1>Área do lojista</h1>
+    <p>Cadastre, edite e remova as peças que aparecem na loja.</p>
+  </section>
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a href="index.html">Home</a><span>/</span>Área do lojista
+  </nav>
+
+  <div id="adminLogin" class="admin-login">
+    <form id="adminLoginForm" class="contact-form">
+      <label>Senha
+        <input type="password" name="password" required autocomplete="current-password">
+      </label>
+      <button type="submit" class="btn btn--primary">Entrar</button>
+      <p class="contact-feedback" id="adminLoginFeedback" role="status"></p>
+    </form>
+  </div>
+
+  <div id="adminPanel" class="admin-panel is-hidden">
+    <div class="admin-panel__top">
+      <h2 id="adminFormTitle">Novo produto</h2>
+      <button type="button" id="adminLogoutBtn" class="btn btn--ghost-dark">Sair</button>
+    </div>
+
+    <form id="adminProductForm" class="admin-form">
+      <input type="hidden" name="id">
+      <label>Nome
+        <input type="text" name="name" required>
+      </label>
+      <label>Descrição
+        <input type="text" name="desc" placeholder="Ex: Cortininha • Dourado degradê">
+      </label>
+      <div class="admin-form__row">
+        <label>Preço (R$)
+          <input type="number" step="0.01" min="0" name="price" required>
+        </label>
+        <label>Preço original (R$) — opcional
+          <input type="number" step="0.01" min="0" name="originalPrice">
+        </label>
+      </div>
+      <div class="admin-form__row">
+        <label>Categoria
+          <select name="category" required>
+            <option value="biquinis">Biquínis</option>
+            <option value="maiobody">Maiô / Body</option>
+            <option value="saidas">Saídas de praia</option>
+          </select>
+        </label>
+        <label id="pieceField">Peça (só biquínis)
+          <select name="piece">
+            <option value="">—</option>
+            <option value="tops">Tops</option>
+            <option value="calcinhas">Calcinhas</option>
+            <option value="conjuntos">Conjuntos</option>
+          </select>
+        </label>
+      </div>
+      <label>URL da imagem — opcional (sem isso usa um degradê de cor)
+        <input type="url" name="imageUrl" placeholder="https://...">
+      </label>
+      <div class="admin-form__row">
+        <label>Cor 1 do degradê
+          <input type="color" name="gradientFrom" value="#ffc46b">
+        </label>
+        <label>Cor 2 do degradê
+          <input type="color" name="gradientTo" value="#ff8a5b">
+        </label>
+      </div>
+      <div class="admin-form__row">
+        <label class="admin-form__checkbox"><input type="checkbox" name="isNew"> Marcar como novidade</label>
+        <label class="admin-form__checkbox"><input type="checkbox" name="isBestseller"> Marcar como mais vendido</label>
+      </div>
+      <label>Ordem de exibição
+        <input type="number" name="sortOrder" value="0">
+      </label>
+      <div class="admin-form__actions">
+        <button type="submit" class="btn btn--primary">Salvar produto</button>
+        <button type="button" id="adminCancelEdit" class="btn btn--ghost-dark is-hidden">Cancelar edição</button>
+      </div>
+      <p class="contact-feedback" id="adminFormFeedback" role="status"></p>
+    </form>
+
+    <h2>Produtos cadastrados</h2>
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead>
+          <tr><th>Produto</th><th>Categoria</th><th>Preço</th><th></th></tr>
+        </thead>
+        <tbody id="adminTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+</main>
+
+<div id="site-footer"></div>
+
+<script src="assets/js/layout.js"></script>
+<script src="assets/js/main.js"></script>
+<script src="assets/js/admin.js"></script>
+</body>
+</html>

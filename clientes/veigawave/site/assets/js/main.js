@@ -80,21 +80,15 @@
   requestAnimationFrame(loop);
 })();
 
-const PRODUCTS = {
-  lancamentos: [
-    { name: "Top Golden Hour", desc: "Cortininha • Dourado degradê", price: "R$ 149", tag: "Novo", gradient: "linear-gradient(135deg,#ffc15e,#ff8a5b)" },
-    { name: "Calcinha Maré Alta", desc: "Asa-delta • Coral", price: "R$ 119", tag: "Novo", gradient: "linear-gradient(135deg,#ff8a5b,#ff6b9d)" },
-    { name: "Conjunto Entardecer", desc: "Hot pant • Rosé", price: "R$ 259", tag: "Novo", gradient: "linear-gradient(135deg,#ff6b9d,#ffc15e)" },
-    { name: "Top Horizonte", desc: "Triângulo • Turquesa", price: "R$ 149", tag: "Novo", gradient: "linear-gradient(135deg,#2ec4b6,#1b6ca8)" },
-    { name: "Saída Maré Baixa", desc: "Kimono leve • Areia", price: "R$ 189", tag: "Novo", gradient: "linear-gradient(135deg,#ffc15e,#2ec4b6)" },
-  ],
-  maisvendidos: [
-    { name: "Conjunto Deep Blue", desc: "Lateral larga • Azul profundo", price: "R$ 249", old: "R$ 289", gradient: "linear-gradient(135deg,#1b6ca8,#0b3d5c)" },
-    { name: "Top Recorte Ondas", desc: "Cortininha • Turquesa", price: "R$ 139", gradient: "linear-gradient(135deg,#2ec4b6,#1b6ca8)" },
-    { name: "Calcinha Sunset", desc: "Fio • Coral degradê", price: "R$ 109", gradient: "linear-gradient(135deg,#ff8a5b,#ffc15e)" },
-    { name: "Maiô Costas Nadador", desc: "Recorte lateral • Rosé", price: "R$ 219", gradient: "linear-gradient(135deg,#ff6b9d,#ff8a5b)" },
-    { name: "Conjunto Ilha", desc: "Asa-delta • Verde mar", price: "R$ 259", old: "R$ 299", gradient: "linear-gradient(135deg,#2ec4b6,#0b3d5c)" },
-  ],
+// Catálogo vem da API (tabela `products`) — só o UGC (carrossel "Vestido por
+// vocês") continua fixo aqui, já que não são produtos de verdade.
+let PRODUCTS = {
+  lancamentos: [],
+  maisvendidos: [],
+  biquinis: [],
+  maiobody: [],
+  saidas: [],
+  sale: [],
   ugc: [
     { name: "@ju.ferreira", desc: "usando Top Golden Hour", gradient: "linear-gradient(135deg,#ffc15e,#ff6b9d)" },
     { name: "@carolzinha", desc: "usando Conjunto Ilha", gradient: "linear-gradient(135deg,#2ec4b6,#1b6ca8)" },
@@ -102,40 +96,28 @@ const PRODUCTS = {
     { name: "@bebiaz", desc: "usando Conjunto Deep Blue", gradient: "linear-gradient(135deg,#1b6ca8,#0b3d5c)" },
     { name: "@nat.oliveira", desc: "usando Top Horizonte", gradient: "linear-gradient(135deg,#ff6b9d,#2ec4b6)" },
   ],
-  biquinis: [
-    { name: "Top Golden Hour", desc: "Cortininha • Dourado degradê", price: "R$ 149", piece: "tops", gradient: "linear-gradient(135deg,#ffc15e,#ff8a5b)" },
-    { name: "Top Recorte Ondas", desc: "Cortininha • Turquesa", price: "R$ 139", piece: "tops", gradient: "linear-gradient(135deg,#2ec4b6,#1b6ca8)" },
-    { name: "Top Horizonte", desc: "Triângulo • Turquesa", price: "R$ 149", piece: "tops", gradient: "linear-gradient(135deg,#2ec4b6,#1b6ca8)" },
-    { name: "Calcinha Maré Alta", desc: "Asa-delta • Coral", price: "R$ 119", piece: "calcinhas", gradient: "linear-gradient(135deg,#ff8a5b,#ff6b9d)" },
-    { name: "Calcinha Sunset", desc: "Fio • Coral degradê", price: "R$ 109", piece: "calcinhas", gradient: "linear-gradient(135deg,#ff8a5b,#ffc15e)" },
-    { name: "Calcinha Hot Pant Areia", desc: "Hot pant • Areia", price: "R$ 115", piece: "calcinhas", gradient: "linear-gradient(135deg,#e7ddc9,#c9a45c)" },
-    { name: "Conjunto Entardecer", desc: "Hot pant • Rosé", price: "R$ 259", piece: "conjuntos", gradient: "linear-gradient(135deg,#ff6b9d,#ffc15e)" },
-    { name: "Conjunto Deep Blue", desc: "Lateral larga • Azul profundo", price: "R$ 249", old: "R$ 289", piece: "conjuntos", gradient: "linear-gradient(135deg,#1b6ca8,#0b3d5c)" },
-    { name: "Conjunto Ilha", desc: "Asa-delta • Verde mar", price: "R$ 259", old: "R$ 299", piece: "conjuntos", gradient: "linear-gradient(135deg,#2ec4b6,#0b3d5c)" },
-  ],
-  maiobody: [
-    { name: "Maiô Costas Nadador", desc: "Recorte lateral • Rosé", price: "R$ 219", gradient: "linear-gradient(135deg,#ff6b9d,#ff8a5b)" },
-    { name: "Maiô Decote Profundo", desc: "Decote V • Preto solar", price: "R$ 229", gradient: "linear-gradient(135deg,#07211f,#0a8478)" },
-    { name: "Body Recorte Cintura", desc: "Cava alta • Turquesa", price: "R$ 239", tag: "Novo", gradient: "linear-gradient(135deg,#14c6b2,#0a8478)" },
-    { name: "Maiô Amarração Lateral", desc: "Sustentação • Coral", price: "R$ 219", gradient: "linear-gradient(135deg,#ff6a45,#ffc46b)" },
-    { name: "Body Manga Longa", desc: "Proteção UV • Areia", price: "R$ 259", tag: "Novo", gradient: "linear-gradient(135deg,#e7ddc9,#0a8478)" },
-  ],
-  saidas: [
-    { name: "Saída Maré Baixa", desc: "Kimono leve • Areia", price: "R$ 189", tag: "Novo", gradient: "linear-gradient(135deg,#ffc15e,#2ec4b6)" },
-    { name: "Canga Horizonte", desc: "Estampa degradê • 100% viscose", price: "R$ 99", gradient: "linear-gradient(135deg,#ff6a45,#14c6b2)" },
-    { name: "Chapéu Palha Solar", desc: "Aba larga • Natural", price: "R$ 89", gradient: "linear-gradient(135deg,#e7ddc9,#c9a45c)" },
-    { name: "Bolsa de Praia Tecida", desc: "Palha + couro sintético", price: "R$ 159", gradient: "linear-gradient(135deg,#0a8478,#07211f)" },
-    { name: "Vestido Transpassado", desc: "Saída longa • Coral", price: "R$ 179", tag: "Novo", gradient: "linear-gradient(135deg,#ff6b9d,#ff6a45)" },
-  ],
-  sale: [
-    { name: "Conjunto Maré Cheia", desc: "Asa-delta • Turquesa", price: "R$ 159", old: "R$ 259", tag: "-38%", gradient: "linear-gradient(135deg,#14c6b2,#0a8478)" },
-    { name: "Top Areia Dourada", desc: "Cortininha • Areia", price: "R$ 89", old: "R$ 139", tag: "-36%", gradient: "linear-gradient(135deg,#e7ddc9,#ffc46b)" },
-    { name: "Calcinha Fio Coral", desc: "Fio • Coral", price: "R$ 69", old: "R$ 109", tag: "-37%", gradient: "linear-gradient(135deg,#ff8a5b,#ff6b9d)" },
-    { name: "Maiô Clássico Profundo", desc: "Decote reto • Profundo", price: "R$ 149", old: "R$ 229", tag: "-35%", gradient: "linear-gradient(135deg,#07211f,#0a8478)" },
-    { name: "Saída Kimono Pôr do Sol", desc: "Viscose leve • Degradê", price: "R$ 119", old: "R$ 189", tag: "-37%", gradient: "linear-gradient(135deg,#ff6a45,#ffc46b)" },
-    { name: "Conjunto Última Onda", desc: "Hot pant • Rosé", price: "R$ 169", old: "R$ 259", tag: "-35%", gradient: "linear-gradient(135deg,#ff6b9d,#ffc15e)" },
-  ],
 };
+
+function priceLabel(cents) {
+  const reais = cents / 100;
+  return `R$ ${Number.isInteger(reais) ? reais : reais.toFixed(2).replace(".", ",")}`;
+}
+
+function toDisplayProduct(p) {
+  const onSale = p.originalPriceCents && p.originalPriceCents > p.priceCents;
+  const discountPct = onSale ? Math.round((1 - p.priceCents / p.originalPriceCents) * 100) : null;
+  return {
+    slug: p.slug,
+    name: p.name,
+    desc: p.desc || "",
+    price: priceLabel(p.priceCents),
+    old: onSale ? priceLabel(p.originalPriceCents) : undefined,
+    tag: p.isNew ? "Novo" : onSale ? `-${discountPct}%` : undefined,
+    gradient: p.imageUrl ? undefined : `linear-gradient(135deg,${p.gradientFrom},${p.gradientTo})`,
+    image: p.imageUrl || undefined,
+    piece: p.piece || undefined,
+  };
+}
 
 const ACCENT_MAP = {
   a: "áàãâä", e: "éèêë", i: "íìîï", o: "óòõôö", u: "úùûü", c: "ç", n: "ñ",
@@ -170,10 +152,13 @@ function getCartId() {
 }
 
 function productCardHTML(item) {
-  const slug = slugify(item.name);
+  const slug = item.slug || slugify(item.name);
+  const imgStyle = item.image
+    ? `background-image:url('${escapeAttr(item.image)}');background-size:cover;background-position:center;`
+    : `background:${item.gradient || "var(--sand-tint)"};`;
   return `
     <article class="product-card">
-      <div class="product-card__img" style="background:${item.gradient}">
+      <div class="product-card__img" style="${imgStyle}">
         ${item.tag ? `<span class="product-card__tag">${item.tag}</span>` : ""}
         <button
           class="product-card__fav" data-fav
@@ -234,25 +219,48 @@ function renderGrid(id, items) {
     : `<p class="grid-empty">Nada por aqui ainda — volta em breve.</p>`;
 }
 
-renderCarousel("carousel-lancamentos", "lancamentos");
-renderCarousel("carousel-maisvendidos", "maisvendidos");
-renderCarousel("carousel-ugc", "ugc");
-renderGrid("grid-novidades", PRODUCTS.lancamentos);
-renderGrid("grid-maiobody", PRODUCTS.maiobody);
-renderGrid("grid-saidas", PRODUCTS.saidas);
-renderGrid("grid-sale", PRODUCTS.sale);
+async function initCatalog() {
+  try {
+    const res = await fetch("/api/produtos");
+    const data = await res.json();
+    const raw = data.products || [];
 
-const biquinisGrid = document.getElementById("grid-biquinis");
-if (biquinisGrid) {
-  const tabs = document.querySelectorAll(".tabs [data-tab]");
-  function applyTab(tab) {
-    const items = tab === "todos" ? PRODUCTS.biquinis : PRODUCTS.biquinis.filter((p) => p.piece === tab);
-    renderGrid("grid-biquinis", items);
-    tabs.forEach((btn) => btn.classList.toggle("is-active", btn.dataset.tab === tab));
+    PRODUCTS.lancamentos = raw.filter((p) => p.isNew).map(toDisplayProduct);
+    PRODUCTS.maisvendidos = raw.filter((p) => p.isBestseller).map(toDisplayProduct);
+    PRODUCTS.biquinis = raw.filter((p) => p.category === "biquinis").map(toDisplayProduct);
+    PRODUCTS.maiobody = raw.filter((p) => p.category === "maiobody").map(toDisplayProduct);
+    PRODUCTS.saidas = raw.filter((p) => p.category === "saidas").map(toDisplayProduct);
+    PRODUCTS.sale = raw
+      .filter((p) => p.originalPriceCents && p.originalPriceCents > p.priceCents)
+      .map(toDisplayProduct);
+
+    ALL_PRODUCTS = raw.map(toDisplayProduct);
+  } catch {
+    // sem catálogo por enquanto — grids ficam com a mensagem de "vazio"
   }
-  tabs.forEach((btn) => btn.addEventListener("click", () => applyTab(btn.dataset.tab)));
-  applyTab(location.hash ? location.hash.slice(1) : "todos");
+
+  renderCarousel("carousel-lancamentos", "lancamentos");
+  renderCarousel("carousel-maisvendidos", "maisvendidos");
+  renderCarousel("carousel-ugc", "ugc");
+  renderGrid("grid-novidades", PRODUCTS.lancamentos);
+  renderGrid("grid-maiobody", PRODUCTS.maiobody);
+  renderGrid("grid-saidas", PRODUCTS.saidas);
+  renderGrid("grid-sale", PRODUCTS.sale);
+
+  const biquinisGrid = document.getElementById("grid-biquinis");
+  if (biquinisGrid) {
+    const tabs = document.querySelectorAll(".tabs [data-tab]");
+    function applyTab(tab) {
+      const items = tab === "todos" ? PRODUCTS.biquinis : PRODUCTS.biquinis.filter((p) => p.piece === tab);
+      renderGrid("grid-biquinis", items);
+      tabs.forEach((btn) => btn.classList.toggle("is-active", btn.dataset.tab === tab));
+    }
+    tabs.forEach((btn) => btn.addEventListener("click", () => applyTab(btn.dataset.tab)));
+    applyTab(location.hash ? location.hash.slice(1) : "todos");
+  }
 }
+
+initCatalog();
 
 document.querySelectorAll(".carousel-btn").forEach((btn) => {
   btn.addEventListener("click", () => {
@@ -478,7 +486,7 @@ const searchClose = document.getElementById("searchClose");
 const searchInput = document.getElementById("searchInput");
 const searchSuggestions = document.getElementById("searchSuggestions");
 
-const ALL_PRODUCTS = [...PRODUCTS.lancamentos, ...PRODUCTS.maisvendidos];
+let ALL_PRODUCTS = [];
 
 function openSearch() {
   searchOverlay.classList.add("is-open");
