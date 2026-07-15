@@ -202,6 +202,8 @@ button { font-family: inherit; cursor: pointer; }
 .account-form button[type="submit"] { margin-top: 2px; }
 .account-feedback { font-size: 0.8rem; font-weight: 600; color: var(--ocean-blue); min-height: 16px; margin: 0; }
 
+.account-panel__guest.is-hidden { display: none; }
+
 .account-panel__user { text-align: center; }
 .account-panel__user.is-hidden { display: none; }
 .account-avatar {
