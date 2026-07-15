@@ -853,18 +853,21 @@ function cartItemHTML(item) {
   const lineCents = parsePriceToCents(item.price) * item.quantity;
   return `
     <li class="cart-item" data-slug="${item.slug}">
-      <div class="cart-item__img" style="background:${item.gradient || "var(--sand-tint)"}"></div>
+      <div class="cart-item__img" style="background:${item.gradient || "var(--sand-tint)"}">
+        <button type="button" class="cart-item__remove" data-remove aria-label="Remover ${item.name}">✕</button>
+      </div>
       <div class="cart-item__body">
         <p class="cart-item__name">${item.name}</p>
         <p class="cart-item__desc">${item.desc || ""}</p>
+        <div class="cart-item__footer">
+          <div class="cart-item__qty">
+            <button type="button" data-qty-dec aria-label="Diminuir quantidade de ${item.name}">−</button>
+            <span>${item.quantity}</span>
+            <button type="button" data-qty-inc aria-label="Aumentar quantidade de ${item.name}">+</button>
+          </div>
+          <p class="cart-item__price">${formatCents(lineCents)}</p>
+        </div>
       </div>
-      <div class="cart-item__qty">
-        <button type="button" data-qty-dec aria-label="Diminuir quantidade de ${item.name}">−</button>
-        <span>${item.quantity}</span>
-        <button type="button" data-qty-inc aria-label="Aumentar quantidade de ${item.name}">+</button>
-      </div>
-      <p class="cart-item__price">${formatCents(lineCents)}</p>
-      <button type="button" class="cart-item__remove" data-remove aria-label="Remover ${item.name}">✕</button>
     </li>
   `;
 }
