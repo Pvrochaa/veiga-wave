@@ -14,8 +14,10 @@ async function verifyPassword(password, hash) {
 }
 
 function sign(payload) {
-  const secret = process.env.SESSION_SECRET || "";
-  return crypto.createHmac("sha256", secret).update(payload).digest("hex");
+  if (!process.env.SESSION_SECRET) {
+    throw new Error("SESSION_SECRET não configurada no servidor.");
+  }
+  return crypto.createHmac("sha256", process.env.SESSION_SECRET).update(payload).digest("hex");
 }
 
 function setUserSessionCookie(res, user) {
