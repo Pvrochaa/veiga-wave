@@ -302,9 +302,9 @@ function favoriteProductFromButton(btn) {
   };
 }
 
-async function fetchFavoriteSlugs(email) {
+async function fetchFavoriteSlugs() {
   try {
-    const res = await fetch(`/api/favoritos?email=${encodeURIComponent(email)}`);
+    const res = await fetch("/api/favoritos");
     if (!res.ok) return [];
     const data = await res.json();
     return (data.favorites || []).map((f) => f.slug);
@@ -319,7 +319,7 @@ async function syncFavoriteButtons() {
     setWishlistCount(0);
     return;
   }
-  const slugs = await fetchFavoriteSlugs(account.email);
+  const slugs = await fetchFavoriteSlugs();
   setWishlistCount(slugs.length);
   document.querySelectorAll("[data-fav]").forEach((btn) => {
     const isFav = slugs.includes(btn.dataset.slug);
@@ -329,6 +329,7 @@ async function syncFavoriteButtons() {
 }
 
 async function toggleFavorite(btn) {
+  await accountReady;
   const account = getAccount();
   if (!account) {
     pendingFavorite = btn;
@@ -349,13 +350,13 @@ async function toggleFavorite(btn) {
       await fetch("/api/favoritos", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: account.email, product }),
+        body: JSON.stringify({ product }),
       });
     } else {
       await fetch("/api/favoritos", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: account.email, slug: product.slug }),
+        body: JSON.stringify({ slug: product.slug }),
       });
       if (document.body.dataset.page === "favoritos") {
         btn.closest(".product-card")?.remove();
@@ -513,11 +514,27 @@ searchInput.addEventListener("input", () => {
     : `<li class="empty">Nada por aqui ainda. Bora tentar outra palavra?</li>`;
 });
 
-const ACCOUNT_KEY = "veigawave_account";
+// Sessão vem do cookie httpOnly (api/auth.js) — currentUser é só um cache em
+// memória pra poder ler o estado de forma síncrona no resto do código, igual
+// já era com o localStorage falso, sem precisar tornar tudo assíncrono.
+let currentUser = null;
 
 function getAccount() {
-  try { return JSON.parse(localStorage.getItem(ACCOUNT_KEY)); } catch { return null; }
+  return currentUser;
 }
+
+async function refreshCurrentUser() {
+  try {
+    const res = await fetch("/api/auth");
+    const data = await res.json();
+    currentUser = data.user ? { id: data.user.id, nome: data.user.name, email: data.user.email } : null;
+  } catch {
+    currentUser = null;
+  }
+  return currentUser;
+}
+
+let renderAccountState = null;
 
 (function initAccountPanel() {
   const toggle = document.getElementById("accountToggle");
@@ -530,6 +547,8 @@ function getAccount() {
   const tabs = panel.querySelectorAll("[data-account-tab]");
   const loginForm = document.getElementById("loginForm");
   const signupForm = document.getElementById("signupForm");
+  const loginFeedback = document.getElementById("loginFeedback");
+  const signupFeedback = document.getElementById("signupFeedback");
   const accountAvatar = document.getElementById("accountAvatar");
   const accountName = document.getElementById("accountName");
   const accountEmail = document.getElementById("accountEmail");
@@ -574,32 +593,69 @@ function getAccount() {
 
   loginForm.addEventListener("submit", async (e) => {
     e.preventDefault();
-    const email = loginForm.email.value.trim();
-    const stored = getAccount();
-    const nome = stored && stored.email === email ? stored.nome : email.split("@")[0];
-    localStorage.setItem(ACCOUNT_KEY, JSON.stringify({ nome, email }));
-    loginForm.reset();
-    renderState();
-    await syncFavoriteButtons();
-    completePendingFavorite();
-    setTimeout(closePanel, 400);
+    loginFeedback.textContent = "Entrando...";
+    try {
+      const res = await fetch("/api/auth", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "login",
+          email: loginForm.email.value.trim(),
+          password: loginForm.senha.value,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        loginFeedback.textContent = data.error || "Não foi possível entrar.";
+        return;
+      }
+      currentUser = { id: data.user.id, nome: data.user.name, email: data.user.email };
+      loginFeedback.textContent = "";
+      loginForm.reset();
+      renderState();
+      await syncFavoriteButtons();
+      completePendingFavorite();
+      setTimeout(closePanel, 400);
+    } catch {
+      loginFeedback.textContent = "Erro ao entrar. Tenta de novo.";
+    }
   });
 
   signupForm.addEventListener("submit", async (e) => {
     e.preventDefault();
-    const nome = signupForm.nome.value.trim();
-    const email = signupForm.email.value.trim();
-    const telefone = signupForm.telefone.value.trim();
-    localStorage.setItem(ACCOUNT_KEY, JSON.stringify({ nome, email, telefone }));
-    signupForm.reset();
-    renderState();
-    await syncFavoriteButtons();
-    completePendingFavorite();
-    setTimeout(closePanel, 400);
+    signupFeedback.textContent = "Criando conta...";
+    try {
+      const res = await fetch("/api/auth", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "signup",
+          name: signupForm.nome.value.trim(),
+          email: signupForm.email.value.trim(),
+          phone: signupForm.telefone.value.trim(),
+          password: signupForm.senha.value,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        signupFeedback.textContent = data.error || "Não foi possível criar a conta.";
+        return;
+      }
+      currentUser = { id: data.user.id, nome: data.user.name, email: data.user.email };
+      signupFeedback.textContent = "";
+      signupForm.reset();
+      renderState();
+      await syncFavoriteButtons();
+      completePendingFavorite();
+      setTimeout(closePanel, 400);
+    } catch {
+      signupFeedback.textContent = "Erro ao criar conta. Tenta de novo.";
+    }
   });
 
-  logoutBtn.addEventListener("click", () => {
-    localStorage.removeItem(ACCOUNT_KEY);
+  logoutBtn.addEventListener("click", async () => {
+    await fetch("/api/auth", { method: "DELETE" });
+    currentUser = null;
     renderState();
     document.querySelectorAll("[data-fav].is-active").forEach((btn) => {
       btn.classList.remove("is-active");
@@ -608,10 +664,15 @@ function getAccount() {
     setWishlistCount(0);
   });
 
-  renderState();
+  renderAccountState = renderState;
 })();
 
-syncFavoriteButtons();
+async function bootAccount() {
+  await refreshCurrentUser();
+  if (renderAccountState) renderAccountState();
+  await syncFavoriteButtons();
+}
+const accountReady = bootAccount();
 
 const newsletterForm = document.getElementById("newsletterForm");
 const newsletterFeedback = document.getElementById("newsletterFeedback");
@@ -747,6 +808,7 @@ if (favoritosGrid) {
   }
 
   async function renderFavoritos() {
+    await accountReady;
     const account = getAccount();
     if (!account) {
       favoritosLoggedOut.classList.remove("is-hidden");
@@ -757,7 +819,7 @@ if (favoritosGrid) {
     favoritosGrid.classList.remove("is-hidden");
 
     try {
-      const res = await fetch(`/api/favoritos?email=${encodeURIComponent(account.email)}`);
+      const res = await fetch("/api/favoritos");
       const data = await res.json();
       const favorites = data.favorites || [];
       favoritosGrid.innerHTML = favorites.length

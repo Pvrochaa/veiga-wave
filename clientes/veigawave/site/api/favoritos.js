@@ -1,4 +1,5 @@
 const { getPool } = require("../lib/db");
+const { getUserFromRequest } = require("../lib/auth");
 
 function parseBody(req) {
   if (!req.body) return {};
@@ -14,20 +15,21 @@ function parseBody(req) {
 
 module.exports = async function handler(req, res) {
   const pool = getPool();
+  const session = getUserFromRequest(req);
+
+  if (!session) {
+    res.status(401).json({ error: "É preciso estar logado pra favoritar." });
+    return;
+  }
 
   if (req.method === "GET") {
-    const email = (req.query.email || "").trim();
-    if (!email) {
-      res.status(400).json({ error: "Informe o e-mail." });
-      return;
-    }
     try {
       const { rows } = await pool.query(
         `select product_slug, product_name, product_desc, product_price, product_gradient, created_at
          from favorites
-         where lower(customer_email) = lower($1)
+         where user_id = $1
          order by created_at desc`,
-        [email]
+        [session.id]
       );
       res.status(200).json({
         favorites: rows.map((r) => ({
@@ -47,20 +49,19 @@ module.exports = async function handler(req, res) {
 
   if (req.method === "POST") {
     const body = parseBody(req);
-    const email = (body.email || "").trim();
     const product = body.product || {};
 
-    if (!email || !product.slug || !product.name) {
+    if (!product.slug || !product.name) {
       res.status(400).json({ error: "Dados incompletos pra favoritar." });
       return;
     }
 
     try {
       await pool.query(
-        `insert into favorites (customer_email, product_slug, product_name, product_desc, product_price, product_gradient)
+        `insert into favorites (user_id, product_slug, product_name, product_desc, product_price, product_gradient)
          values ($1, $2, $3, $4, $5, $6)
-         on conflict (customer_email, product_slug) do nothing`,
-        [email, product.slug, product.name, product.desc || null, product.price || null, product.gradient || null]
+         on conflict (user_id, product_slug) do nothing`,
+        [session.id, product.slug, product.name, product.desc || null, product.price || null, product.gradient || null]
       );
       res.status(200).json({ ok: true });
     } catch (err) {
@@ -72,19 +73,15 @@ module.exports = async function handler(req, res) {
 
   if (req.method === "DELETE") {
     const body = parseBody(req);
-    const email = (body.email || "").trim();
     const slug = (body.slug || "").trim();
 
-    if (!email || !slug) {
+    if (!slug) {
       res.status(400).json({ error: "Dados incompletos pra remover favorito." });
       return;
     }
 
     try {
-      await pool.query(
-        `delete from favorites where lower(customer_email) = lower($1) and product_slug = $2`,
-        [email, slug]
-      );
+      await pool.query(`delete from favorites where user_id = $1 and product_slug = $2`, [session.id, slug]);
       res.status(200).json({ ok: true });
     } catch (err) {
       console.error("Erro ao remover favorito:", err);

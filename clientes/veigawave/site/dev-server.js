@@ -8,6 +8,7 @@ const favoritos = require("./api/favoritos");
 const carrinho = require("./api/carrinho");
 const produtos = require("./api/produtos");
 const adminLogin = require("./api/admin-login");
+const auth = require("./api/auth");
 
 const app = express();
 app.use(express.json());
@@ -18,6 +19,7 @@ app.all("/api/favoritos", (req, res) => favoritos(req, res));
 app.all("/api/carrinho", (req, res) => carrinho(req, res));
 app.all("/api/produtos", (req, res) => produtos(req, res));
 app.all("/api/admin-login", (req, res) => adminLogin(req, res));
+app.all("/api/auth", (req, res) => auth(req, res));
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Dev server rodando em http://localhost:${PORT}`));
